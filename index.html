@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Team Finder POC</title>
+    <title>Padel Partner Finder POC</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
         :root {
-            --primary-color: #007bff;
+            --primary-color: #007bff; /* Blue - Padel often uses blues, greens, oranges */
+            /* Consider a Padel-themed primary color like a vibrant teal or orange */
+            /* --primary-color: #FF6F00; /* Padel Orange */
             --secondary-color: #6c757d;
             --success-color: #28a745;
             --danger-color: #dc3545;
@@ -42,8 +44,8 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            position: relative; /* For nav overlay positioning */
-            overflow-x: hidden; /* Prevent horizontal scroll from nav */
+            position: relative;
+            overflow-x: hidden;
         }
 
         .screen {
@@ -70,7 +72,7 @@
             color: white;
             padding: 15px 20px;
             text-align: center;
-            font-size: 1.2em; /* Adjusted for burger menu */
+            font-size: 1.2em;
             font-weight: 600;
             box-shadow: var(--box-shadow);
             position: sticky;
@@ -84,27 +86,20 @@
             background: none;
             border: none;
             color: white;
-            font-size: 1em; /* Adjusted for consistency */
+            font-size: 1em;
             padding: 8px;
             cursor: pointer;
             border-radius: var(--border-radius);
             transition: background-color 0.3s ease;
-            min-width: 40px; /* Ensure clickable area */
+            min-width: 40px;
             text-align: center;
         }
         .app-header .nav-button:hover {
             background-color: rgba(255,255,255,0.2);
         }
-        .app-header .back-button {
-            font-size: 1.5em; /* Larger arrow */
-        }
-        .app-header .burger-button {
-            font-size: 1.5em; /* Larger burger */
-        }
-        #headerTitle {
-            flex-grow: 1;
-            text-align: center;
-        }
+        .app-header .back-button { font-size: 1.5em; }
+        .app-header .burger-button { font-size: 1.5em; }
+        #headerTitle { flex-grow: 1; text-align: center; }
 
 
         h1, h2, h3 {
@@ -138,19 +133,13 @@
         }
 
         .button:hover {
-            background-color: #0056b3;
+            background-color: #0056b3; /* Darker primary */
             transform: translateY(-2px);
         }
-        .button:active {
-            transform: translateY(0px);
-        }
+        .button:active { transform: translateY(0px); }
 
-        .button-secondary {
-            background-color: var(--secondary-color);
-        }
-        .button-secondary:hover {
-            background-color: #545b62;
-        }
+        .button-secondary { background-color: var(--secondary-color); }
+        .button-secondary:hover { background-color: #545b62; }
         .button-success { background-color: var(--success-color); }
         .button-success:hover { background-color: #1e7e34; }
         .button-danger { background-color: var(--danger-color); }
@@ -175,14 +164,8 @@
             transform: translateY(-3px);
             box-shadow: 0 6px 12px rgba(0,0,0,0.1);
         }
-        .list-item h3 {
-            margin-bottom: 5px;
-            color: var(--primary-color);
-        }
-        .list-item p {
-            font-size: 0.9em;
-            color: var(--secondary-color);
-        }
+        .list-item h3 { margin-bottom: 5px; color: var(--primary-color); }
+        .list-item p { font-size: 0.9em; color: var(--secondary-color); }
 
         .form-group {
             margin-bottom: 20px;
@@ -210,7 +193,7 @@
         .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25); /* Use primary color alpha */
         }
 
         .time-window { display: flex; gap: 10px; }
@@ -229,12 +212,10 @@
         .card p { margin-bottom: 8px; color: var(--text-color); }
         .card p strong { color: var(--dark-color); }
 
-        /* Auth Screen Specifics */
         #auth-screen { justify-content: center; }
         #auth-screen .logo { font-size: 3em; color: var(--primary-color); margin-bottom: 30px; font-weight: 700; }
         #auth-screen p { margin-bottom: 30px; color: var(--secondary-color); font-size: 1.1em; }
 
-        /* Join Request Card */
         .join-request-card {
             background-color: var(--light-color);
             border: 1px solid #ddd;
@@ -258,20 +239,13 @@
             align-items: center;
             font-weight: bold;
             color: white;
+            font-size: 1.2em;
         }
         .join-request-info h4 { color: var(--dark-color); margin-bottom: 3px; font-size: 1.1em;}
         .join-request-info p { font-size: 0.8em; color: var(--secondary-color); margin: 0; }
-        .join-request-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .join-request-actions .button {
-            flex: 1;
-            padding: 8px 10px;
-            font-size: 0.9em;
-            margin-top: 0;
-        }
+        .join-request-actions { display: flex; gap: 10px; margin-top: 10px; }
+        .join-request-actions .button { flex: 1; padding: 8px 10px; font-size: 0.9em; margin-top: 0; }
+
         .status-message {
             padding: 10px;
             border-radius: var(--border-radius);
@@ -281,13 +255,14 @@
         }
         .status-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;}
         .status-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;}
+        .status-warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
 
-        /* Chat Screen */
-        #chat-screen { padding-bottom: 80px; /* Space for input bar */ }
+
+        #chat-screen { padding-bottom: 80px; }
         #chatMessagesContainer {
             width: 100%;
             max-width: 400px;
-            height: calc(100vh - 220px); /* Adjust based on header and input bar */
+            height: calc(100vh - 220px);
             overflow-y: auto;
             border: 1px solid #ddd;
             padding: 10px;
@@ -329,13 +304,8 @@
             border-top: 1px solid #ddd;
             box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
         }
-         #chat-screen #chatInputContainer { /* Make it appear only on chat screen */
-            display: none;
-        }
-        #chat-screen.active #chatInputContainer {
-            display: flex;
-        }
-
+        #chat-screen #chatInputContainer { display: none; }
+        #chat-screen.active #chatInputContainer { display: flex; }
         #chatMessageInput {
             flex-grow: 1;
             padding: 10px;
@@ -343,31 +313,22 @@
             border-radius: var(--border-radius);
             margin-right: 10px;
         }
-        #sendChatMessageButton {
-            padding: 10px 15px;
-        }
+        #sendChatMessageButton { padding: 10px 15px; }
 
-        /* Burger Menu Navigation */
         .nav-overlay {
             position: fixed;
             top: 0;
-            left: -280px; /* Start off-screen */
+            left: -280px;
             width: 250px;
             height: 100%;
             background-color: var(--dark-color);
             box-shadow: 2px 0 10px rgba(0,0,0,0.3);
-            z-index: 1001; /* Above header */
+            z-index: 1001;
             transition: left 0.3s ease-in-out;
-            padding-top: 70px; /* Below header */
+            padding-top: 70px;
         }
-        .nav-overlay.open {
-            left: 0;
-        }
-        .nav-overlay ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+        .nav-overlay.open { left: 0; }
+        .nav-overlay ul { list-style: none; padding: 0; margin: 0; }
         .nav-overlay ul li a {
             display: block;
             padding: 15px 20px;
@@ -377,9 +338,7 @@
             border-bottom: 1px solid #495057;
             transition: background-color 0.2s ease;
         }
-        .nav-overlay ul li a:hover {
-            background-color: var(--primary-color);
-        }
+        .nav-overlay ul li a:hover { background-color: var(--primary-color); }
         .nav-overlay-backdrop {
             position: fixed;
             top: 0;
@@ -387,15 +346,11 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
-            z-index: 1000; /* Below overlay, above content */
+            z-index: 1000;
             display: none;
         }
-        .nav-overlay-backdrop.open {
-            display: block;
-        }
+        .nav-overlay-backdrop.open { display: block; }
 
-
-        /* Helper classes */
         .text-center { text-align: center; }
         .mt-20 { margin-top: 20px; }
         .w-100 { width: 100%; }
@@ -407,34 +362,33 @@
         <nav id="navOverlay" class="nav-overlay">
             <ul>
                 <li><a href="#" id="navHome">Home</a></li>
-                <li><a href="#" id="navMySearches">My Searches</a></li>
-                <li><a href="#" id="navCreateNewSearch">Create New Search</a></li>
+                <li><a href="#" id="navMyPadelGames">My Padel Games</a></li>
+                <li><a href="#" id="navCreateNewGame">Create New Game</a></li>
             </ul>
         </nav>
 
         <header class="app-header">
             <button id="burgerButton" class="nav-button burger-button">&#9776;</button>
-            <span id="headerTitle">Team Finder</span>
+            <span id="headerTitle">Padel Partner</span>
             <button id="backButton" class="nav-button back-button" style="visibility: hidden;">&larr;</button>
-            <!-- <button id="mySearchesNavButton" class="nav-button" style="visibility: hidden;">My Searches</button> -->
         </header>
 
         <!-- Screen 1: Authorisation -->
         <div id="auth-screen" class="screen active">
-            <div class="logo">TeamUp!</div>
-            <p>Find teammates for your favorite sports.</p>
+            <div class="logo">PadelUp!</div> <!-- Padel-themed logo text -->
+            <p>Find partners for your next Padel match.</p>
             <button id="authButton" class="button">Get Started</button>
         </div>
 
-        <!-- Screen 2: Sport Grounds List -->
+        <!-- Screen 2: Padel Club List -->
         <div id="grounds-list-screen" class="screen">
-            <h2 class="page-title">Choose a Sport Ground</h2>
+            <h2 class="page-title">Choose a Padel Club</h2>
             <div id="sportGroundsListContainer" class="list-container w-100" style="max-width: 400px;"></div>
         </div>
 
-        <!-- Screen 3: Sport Center Form -->
+        <!-- Screen 3: Padel Game Form -->
         <div id="sport-center-form-screen" class="screen">
-            <h2 id="sportCenterNameTitle" class="page-title">Create a Search</h2>
+            <h2 id="sportCenterNameTitle" class="page-title">Arrange a Padel Game</h2>
             <div class="form-group">
                 <label for="gameDate">Date:</label>
                 <input type="date" id="gameDate">
@@ -453,20 +407,19 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="teammatesNeeded">Teammates Needed:</label>
-                <select id="teammatesNeeded">
-                    <option value="1">1 Teammate</option>
-                    <option value="2">2 Teammates</option>
-                    <option value="3">3 Teammates</option>
-                    <option value="4">4 Teammates</option>
+                <label for="otherPlayersNeeded">Other Players Needed (besides yourself):</label>
+                <select id="otherPlayersNeeded">
+                    <option value="1">1 Player (Total 2)</option>
+                    <option value="2">2 Players (Total 3)</option>
+                    <option value="3" selected>3 Players (Total 4 for a full game)</option>
                 </select>
             </div>
-            <button id="findTeamButton" class="button">Find Team</button>
+            <button id="findTeamButton" class="button">Find Players</button>
         </div>
 
-        <!-- Screen 4: Team Looking Page (Dedicated search page) -->
+        <!-- Screen 4: Padel Game Details Page -->
         <div id="team-looking-screen" class="screen">
-            <h2 id="teamLookingTitle" class="page-title w-100">Looking for Team</h2>
+            <h2 id="teamLookingTitle" class="page-title w-100">Padel Game Details</h2>
             <div id="teamLookingDetailsCard" class="card w-100">
                 <!-- Search details will be populated here -->
             </div>
@@ -474,22 +427,20 @@
                 <!-- Join requests will be populated here -->
             </div>
              <div id="teamLookingStatusMessage" class="status-message" style="display:none;"></div>
-            <button id="createNewSearchFromLookingButton" class="button button-secondary mt-20">Create Another Search</button>
+            <button id="createNewSearchFromLookingButton" class="button button-secondary mt-20">Arrange Another Game</button>
         </div>
 
-        <!-- Screen 5: My Searches List -->
+        <!-- Screen 5: My Padel Games List -->
         <div id="my-searches-screen" class="screen">
-            <h2 class="page-title w-100">My Active Searches</h2>
+            <h2 class="page-title w-100">My Padel Games</h2>
             <div id="mySearchesListContainer" class="list-container w-100" style="max-width: 400px;"></div>
-            <button id="createNewSearchFromMyListButton" class="button button-secondary mt-20">Create New Search</button>
+            <button id="createNewSearchFromMyListButton" class="button button-secondary mt-20">Arrange New Game</button>
         </div>
 
         <!-- Screen 6: Chat Screen -->
         <div id="chat-screen" class="screen">
             <h2 id="chatWithUserTitle" class="page-title w-100">Chat</h2>
-            <div id="chatMessagesContainer">
-                <!-- Messages will appear here -->
-            </div>
+            <div id="chatMessagesContainer"></div>
             <div id="chatInputContainer">
                 <input type="text" id="chatMessageInput" placeholder="Type a message...">
                 <button id="sendChatMessageButton" class="button">Send</button>
@@ -502,17 +453,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             // --- DOM Elements ---
             const screens = document.querySelectorAll('.screen');
-            const authScreen = document.getElementById('auth-screen');
-            // ... (other screen elements)
-            const chatScreen = document.getElementById('chat-screen');
-
-            const authButton = document.getElementById('authButton');
             const sportGroundsListContainer = document.getElementById('sportGroundsListContainer');
             const sportCenterNameTitle = document.getElementById('sportCenterNameTitle');
             const gameDateInput = document.getElementById('gameDate');
             const startTimeInput = document.getElementById('startTime');
             const endTimeInput = document.getElementById('endTime');
-            const teammatesNeededSelect = document.getElementById('teammatesNeeded');
+            const otherPlayersNeededSelect = document.getElementById('otherPlayersNeeded'); // Changed ID
             const findTeamButton = document.getElementById('findTeamButton');
             
             const teamLookingScreen = document.getElementById('team-looking-screen');
@@ -525,7 +471,6 @@
 
             const headerTitle = document.getElementById('headerTitle');
             const backButton = document.getElementById('backButton');
-            // const mySearchesNavButton = document.getElementById('mySearchesNavButton'); // Kept for reference, but burger is primary
             const createNewSearchFromLookingButton = document.getElementById('createNewSearchFromLookingButton');
             const createNewSearchFromMyListButton = document.getElementById('createNewSearchFromMyListButton');
 
@@ -533,43 +478,47 @@
             const navOverlay = document.getElementById('navOverlay');
             const navOverlayBackdrop = document.getElementById('navOverlayBackdrop');
             const navHome = document.getElementById('navHome');
-            const navMySearches = document.getElementById('navMySearches');
-            const navCreateNewSearch = document.getElementById('navCreateNewSearch');
+            const navMyPadelGames = document.getElementById('navMyPadelGames'); // Renamed
+            const navCreateNewGame = document.getElementById('navCreateNewGame'); // Renamed
 
             const chatWithUserTitle = document.getElementById('chatWithUserTitle');
             const chatMessagesContainer = document.getElementById('chatMessagesContainer');
             const chatMessageInput = document.getElementById('chatMessageInput');
             const sendChatMessageButton = document.getElementById('sendChatMessageButton');
+            const authButton = document.getElementById('authButton');
+
 
             // --- App State ---
             let currentScreenId = 'auth-screen';
             let navigationHistory = [];
-            const sportGroundsData = [
-                { id: 'sg1', name: 'City Sports Arena', city: 'Metropolis' },
-                { id: 'sg2', name: 'Greenfield Park Courts', city: 'Metropolis' },
-                { id: 'sg3', name: 'Riverside Rec Center', city: 'Metropolis' },
-                { id: 'sg4', name: 'Victory Athletic Club', city: 'Metropolis' },
-                { id: 'sg5', name: 'Skyline Sports Complex', city: 'Metropolis' },
+            const sportGroundsData = [ // Padel specific names
+                { id: 'pc1', name: 'Metropolis Padel Club', city: 'Metropolis' },
+                { id: 'pc2', name: 'Greenfield Padel Courts', city: 'Metropolis' },
+                { id: 'pc3', name: 'Riverside Padel Center', city: 'Metropolis' },
+                { id: 'pc4', name: 'Victory Padel Arena', city: 'Metropolis' },
+                { id: 'pc5', name: 'Skyline Padel Complex', city: 'Metropolis' },
             ];
-            let activeSearches = [];
+            let activeSearches = []; // { ..., otherPlayersNeeded, playersJoined, ... }
             let selectedSportCenter = null;
             let nextSearchId = 1;
-            let currentViewingSearchId = null; // To know which search's requests we are managing
-            let currentChatContext = null; // { searchId, requestId, requesterName, requesterAvatarColor }
-            let chats = {}; // { 'chat_SEARCHID_REQUESTID': [{ sender: 'user'/'them', text: 'message', timestamp: Date.now() }] }
+            let currentViewingSearchId = null;
+            let currentChatContext = null;
+            let chats = {};
 
-            const mockRequesters = [
-                { name: "Alex P.", rating: 4.5, games: 120, avatarLetter: "A" },
-                { name: "Sarah K.", rating: 4.2, games: 85, avatarLetter: "S" },
+            const mockRequesters = [ // More Padel-like
+                { name: "Alex P.", rating: 4.5, games: 120, avatarLetter: "A" }, // "games" to "matchesPlayed"
+                { name: "Sara K.", rating: 4.2, games: 85, avatarLetter: "S" },
                 { name: "Mike B.", rating: 4.8, games: 210, avatarLetter: "M" },
-                { name: "Jessica L.", rating: 3.9, games: 50, avatarLetter: "J" },
+                { name: "Jess L.", rating: 3.9, games: 50, avatarLetter: "J" },
+                { name: "Carlos G.", rating: 4.0, games: 150, avatarLetter: "C"},
+                { name: "Laura M.", rating: 3.5, games: 70, avatarLetter: "L"}
             ];
-            const avatarColors = ["#e91e63", "#9c27b0", "#2196f3", "#4caf50", "#ff9800", "#795548"];
+            const avatarColors = ["#e91e63", "#9c27b0", "#2196f3", "#4caf50", "#ff9800", "#795548", "#009688", "#FF5722"];
 
 
             // --- Utility Functions ---
             function showScreen(screenId, isBackAction = false) {
-                closeNavOverlay(); // Close nav if open when changing screens
+                closeNavOverlay();
                 if (!isBackAction && currentScreenId !== screenId) {
                     navigationHistory.push(currentScreenId);
                 }
@@ -579,7 +528,7 @@
                     targetScreen.classList.add('active');
                 } else {
                     console.error("Screen not found:", screenId);
-                    document.getElementById('auth-screen').classList.add('active'); // Fallback
+                    document.getElementById('auth-screen').classList.add('active'); 
                     currentScreenId = 'auth-screen';
                     navigationHistory = [];
                     updateHeader();
@@ -587,31 +536,27 @@
                 }
                 currentScreenId = screenId;
                 updateHeader();
-                window.scrollTo(0, 0); // Scroll to top on screen change
+                window.scrollTo(0, 0);
             }
 
             function updateHeader() {
-                // mySearchesNavButton.style.visibility = 'hidden'; // Burger menu replaces this
                 backButton.style.visibility = 'hidden';
-                burgerButton.style.visibility = 'visible'; // Always visible except auth
+                burgerButton.style.visibility = 'visible';
 
                 if (currentScreenId === 'auth-screen') {
-                    headerTitle.textContent = 'TeamUp!';
+                    headerTitle.textContent = 'PadelUp!';
                     burgerButton.style.visibility = 'hidden';
                 } else if (currentScreenId === 'grounds-list-screen') {
-                    headerTitle.textContent = 'Choose Ground';
-                    // if(activeSearches.length > 0) mySearchesNavButton.style.visibility = 'visible';
+                    headerTitle.textContent = 'Choose Padel Club';
                 } else if (currentScreenId === 'sport-center-form-screen') {
-                    headerTitle.textContent = selectedSportCenter ? selectedSportCenter.name : 'Create Search';
+                    headerTitle.textContent = selectedSportCenter ? selectedSportCenter.name : 'Arrange Game';
                     backButton.style.visibility = 'visible';
-                    // if(activeSearches.length > 0) mySearchesNavButton.style.visibility = 'visible';
                 } else if (currentScreenId === 'team-looking-screen') {
                     const search = activeSearches.find(s => s.id === currentViewingSearchId);
-                    headerTitle.textContent = search ? `Search: ${search.groundName.substring(0,15)}...` : 'Search Details';
+                    headerTitle.textContent = search ? `Game: ${search.groundName.substring(0,15)}...` : 'Game Details';
                     backButton.style.visibility = 'visible';
-                    // if(activeSearches.length > 0) mySearchesNavButton.style.visibility = 'visible';
                 } else if (currentScreenId === 'my-searches-screen') {
-                    headerTitle.textContent = 'My Searches';
+                    headerTitle.textContent = 'My Padel Games';
                     backButton.style.visibility = 'visible';
                 } else if (currentScreenId === 'chat-screen') {
                     headerTitle.textContent = currentChatContext ? `Chat with ${currentChatContext.requesterName}` : 'Chat';
@@ -619,15 +564,13 @@
                 }
 
                 if (navigationHistory.length === 0 && currentScreenId !== 'auth-screen') {
-                     // If history is empty but not on auth, means direct nav via burger. Allow back to grounds list.
-                    if (currentScreenId === 'my-searches-screen' || currentScreenId === 'sport-center-form-screen') {
+                    if (currentScreenId === 'my-searches-screen' || currentScreenId === 'sport-center-form-screen' || currentScreenId === 'team-looking-screen') {
                         backButton.style.visibility = 'visible';
                     } else {
                          backButton.style.visibility = 'hidden';
                     }
                 }
-                 // Special case for chat: back button should always be visible
-                if (currentScreenId === 'chat-screen') {
+                if (currentScreenId === 'chat-screen' && navigationHistory.length > 0) { // Ensure back button for chat
                     backButton.style.visibility = 'visible';
                 }
             }
@@ -641,35 +584,22 @@
                     const previousScreenId = navigationHistory.pop();
                     showScreen(previousScreenId, true);
                 } else if (currentScreenId !== 'grounds-list-screen' && currentScreenId !== 'auth-screen') {
-                    // If no history, and not on grounds/auth, go to grounds list as a default "up"
                     showScreen('grounds-list-screen', true); 
                 }
             }
             backButton.addEventListener('click', goBack);
 
-            // Burger Menu Logic
-            function openNavOverlay() {
-                navOverlay.classList.add('open');
-                navOverlayBackdrop.classList.add('open');
-            }
-            function closeNavOverlay() {
-                navOverlay.classList.remove('open');
-                navOverlayBackdrop.classList.remove('open');
-            }
+            function openNavOverlay() { navOverlay.classList.add('open'); navOverlayBackdrop.classList.add('open'); }
+            function closeNavOverlay() { navOverlay.classList.remove('open'); navOverlayBackdrop.classList.remove('open'); }
             burgerButton.addEventListener('click', openNavOverlay);
             navOverlayBackdrop.addEventListener('click', closeNavOverlay);
             navHome.addEventListener('click', (e) => { e.preventDefault(); showScreen('auth-screen'); navigationHistory = []; });
-            navMySearches.addEventListener('click', (e) => { e.preventDefault(); renderMySearches(); showScreen('my-searches-screen'); });
-            navCreateNewSearch.addEventListener('click', (e) => { e.preventDefault(); renderSportGrounds(); showScreen('grounds-list-screen'); });
+            navMyPadelGames.addEventListener('click', (e) => { e.preventDefault(); renderMySearches(); showScreen('my-searches-screen'); });
+            navCreateNewGame.addEventListener('click', (e) => { e.preventDefault(); renderSportGrounds(); showScreen('grounds-list-screen'); });
 
 
-            // --- Render Functions ---
-            function getRandomColor() {
-                return avatarColors[Math.floor(Math.random() * avatarColors.length)];
-            }
-            function getRandomRequester() {
-                return mockRequesters[Math.floor(Math.random() * mockRequesters.length)];
-            }
+            function getRandomColor() { return avatarColors[Math.floor(Math.random() * avatarColors.length)]; }
+            function getRandomRequester() { return mockRequesters[Math.floor(Math.random() * mockRequesters.length)]; }
 
 
             function renderSportGrounds() {
@@ -688,34 +618,34 @@
             }
 
             function renderSportCenterForm(center) {
-                sportCenterNameTitle.textContent = `New Search at ${center.name}`;
+                sportCenterNameTitle.textContent = `Arrange Game at ${center.name}`;
                 gameDateInput.value = new Date().toISOString().split('T')[0];
                 startTimeInput.value = "18:00";
                 endTimeInput.value = "20:00";
-                teammatesNeededSelect.value = "1";
+                otherPlayersNeededSelect.value = "3"; // Default to looking for 3 others for a full game
             }
 
             function renderTeamLookingPage(searchId) {
                 currentViewingSearchId = searchId;
                 const search = activeSearches.find(s => s.id === searchId);
                 if (!search) {
-                    showUserMessage('Search not found!', 'danger', teamLookingStatusMessage);
+                    showUserMessage('Padel game not found!', 'danger', teamLookingStatusMessage);
                     setTimeout(() => showScreen('grounds-list-screen'), 2000);
                     return;
                 }
 
-                teamLookingTitle.textContent = `Game at ${search.groundName}`;
-                const stillNeeded = search.teammatesNeeded - search.playersJoined;
+                teamLookingTitle.textContent = `Padel Game at ${search.groundName}`;
+                const stillNeeded = search.otherPlayersNeeded - search.playersJoined;
 
                 teamLookingDetailsCard.innerHTML = `
                     <p><strong>Date:</strong> ${new Date(search.date).toLocaleDateString()}</p>
                     <p><strong>Time:</strong> ${search.startTime} - ${search.endTime}</p>
-                    <p><strong>Original Ask:</strong> ${search.teammatesNeeded} teammate${search.teammatesNeeded > 1 ? 's' : ''}</p>
+                    <p><strong>Original Ask:</strong> ${search.otherPlayersNeeded} other player${search.otherPlayersNeeded > 1 ? 's' : ''}</p>
                     <p><strong>Players Joined:</strong> ${search.playersJoined}</p>
-                    <p><strong>Still Need:</strong> <strong style="color: ${stillNeeded <= 0 ? 'var(--success-color)' : 'var(--danger-color)'};">${stillNeeded > 0 ? stillNeeded : 'Team Full!'}</strong></p>
+                    <p><strong>Still Need:</strong> <strong style="color: ${stillNeeded <= 0 ? 'var(--success-color)' : 'var(--danger-color)'};">${stillNeeded > 0 ? stillNeeded : 'Game Full!'}</strong></p>
                 `;
 
-                joinRequestsContainer.innerHTML = '<h3>Join Requests:</h3>';
+                joinRequestsContainer.innerHTML = '<h3>Player Requests to Join:</h3>';
                 let hasPendingRequests = false;
                 if (search.joinRequests && search.joinRequests.length > 0) {
                     search.joinRequests.forEach(req => {
@@ -728,7 +658,7 @@
                                     <div class="avatar-circle" style="background-color: ${req.requesterAvatarColor};">${req.requesterName.charAt(0)}</div>
                                     <div class="join-request-info">
                                         <h4>${req.requesterName}</h4>
-                                        <p>Rating: ${req.requesterRating} ★ | Games: ${req.requesterGames}</p>
+                                        <p>Rating: ${req.requesterRating} ★ | Matches: ${req.requesterGames}</p>
                                     </div>
                                 </div>
                                 <div class="join-request-actions">
@@ -743,13 +673,11 @@
                 }
 
                 if (!hasPendingRequests && stillNeeded > 0) {
-                    joinRequestsContainer.innerHTML += '<p class="text-center mt-20" style="color: var(--secondary-color);">No pending join requests right now.</p>';
+                    joinRequestsContainer.innerHTML += '<p class="text-center mt-20" style="color: var(--secondary-color);">No pending requests to join right now.</p>';
                 } else if (stillNeeded <= 0) {
-                     joinRequestsContainer.innerHTML = '<p class="text-center mt-20" style="color: var(--success-color);">Your team is full!</p>';
+                     joinRequestsContainer.innerHTML = '<p class="text-center mt-20" style="color: var(--success-color);">This Padel game is full!</p>';
                 }
 
-
-                // Add event listeners for new buttons
                 teamLookingScreen.querySelectorAll('.confirm-request').forEach(btn => {
                     btn.addEventListener('click', () => handleConfirmRequest(search.id, btn.dataset.reqid));
                 });
@@ -765,11 +693,9 @@
 
             function showUserMessage(message, type = 'success', element) {
                 element.textContent = message;
-                element.className = `status-message status-${type}`; // 'status-success' or 'status-danger'
+                element.className = `status-message status-${type}`;
                 element.style.display = 'block';
-                setTimeout(() => {
-                    element.style.display = 'none';
-                }, 3000);
+                setTimeout(() => { element.style.display = 'none'; }, 3000);
             }
 
             function handleConfirmRequest(searchId, requestId) {
@@ -777,13 +703,13 @@
                 const request = search ? search.joinRequests.find(r => r.id === requestId) : null;
 
                 if (search && request && request.status === 'pending') {
-                    if (search.playersJoined < search.teammatesNeeded) {
+                    if (search.playersJoined < search.otherPlayersNeeded) {
                         search.playersJoined++;
                         request.status = 'accepted';
-                        showUserMessage(`${request.requesterName} confirmed!`, 'success', teamLookingStatusMessage);
-                        renderTeamLookingPage(searchId); // Re-render to update counts and remove request
+                        showUserMessage(`${request.requesterName} confirmed for the game!`, 'success', teamLookingStatusMessage);
+                        renderTeamLookingPage(searchId);
                     } else {
-                        showUserMessage('Team is already full!', 'warning', teamLookingStatusMessage);
+                        showUserMessage('This game is already full!', 'warning', teamLookingStatusMessage);
                     }
                 }
             }
@@ -795,7 +721,7 @@
                 if (search && request && request.status === 'pending') {
                     request.status = 'declined';
                     showUserMessage(`Request from ${request.requesterName} declined.`, 'danger', teamLookingStatusMessage);
-                    renderTeamLookingPage(searchId); // Re-render to remove request
+                    renderTeamLookingPage(searchId);
                 }
             }
 
@@ -818,17 +744,17 @@
             function renderMySearches() {
                 mySearchesListContainer.innerHTML = '';
                 if (activeSearches.length === 0) {
-                    mySearchesListContainer.innerHTML = '<p class="text-center">No active searches yet. Create one!</p>';
+                    mySearchesListContainer.innerHTML = '<p class="text-center">No Padel games arranged yet. Create one!</p>';
                     return;
                 }
                 activeSearches.slice().reverse().forEach(search => {
                     const searchDiv = document.createElement('div');
                     searchDiv.classList.add('list-item');
-                    const stillNeeded = search.teammatesNeeded - search.playersJoined;
+                    const stillNeeded = search.otherPlayersNeeded - search.playersJoined;
                     searchDiv.innerHTML = `
                         <h3>${search.groundName}</h3>
                         <p>Date: ${new Date(search.date).toLocaleDateString()} | Time: ${search.startTime} - ${search.endTime}</p>
-                        <p>Seeking: ${search.teammatesNeeded} | Joined: ${search.playersJoined} | Still Need: ${stillNeeded > 0 ? stillNeeded : 'Full'}</p>
+                        <p>Players needed: ${search.otherPlayersNeeded} | Joined: ${search.playersJoined} | Spots Left: ${stillNeeded > 0 ? stillNeeded : 'Full'}</p>
                     `;
                     searchDiv.addEventListener('click', () => {
                         renderTeamLookingPage(search.id);
@@ -846,17 +772,15 @@
                 const messages = chats[chatId] || [];
 
                 if (messages.length === 0) {
-                     // Add a system message if chat is empty
                     const systemMsgDiv = document.createElement('div');
-                    systemMsgDiv.classList.add('chat-message', 'them'); // Style as 'them' for now
+                    systemMsgDiv.classList.add('chat-message', 'them');
                     systemMsgDiv.style.alignSelf = 'center';
                     systemMsgDiv.style.backgroundColor = '#f0f0f0';
                     systemMsgDiv.style.fontStyle = 'italic';
                     systemMsgDiv.style.fontSize = '0.9em';
-                    systemMsgDiv.textContent = `This is the beginning of your chat with ${currentChatContext.requesterName}.`;
+                    systemMsgDiv.textContent = `Chat about the Padel game with ${currentChatContext.requesterName}.`;
                     chatMessagesContainer.appendChild(systemMsgDiv);
                 }
-
 
                 messages.forEach(msg => {
                     const msgDiv = document.createElement('div');
@@ -864,7 +788,7 @@
                     msgDiv.textContent = msg.text;
                     chatMessagesContainer.appendChild(msgDiv);
                 });
-                chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight; // Scroll to bottom
+                chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
             }
 
             sendChatMessageButton.addEventListener('click', () => {
@@ -876,26 +800,22 @@
                     }
                     chats[chatId].push({ sender: 'user', text: text, timestamp: Date.now() });
                     chatMessageInput.value = '';
-                    renderChatScreen(); // Re-render to show new message
+                    renderChatScreen();
 
-                    // Simulate a reply after a short delay
                     setTimeout(() => {
-                         if (currentScreenId === 'chat-screen' && // Only reply if still on this chat
+                         if (currentScreenId === 'chat-screen' && 
                             `chat_${currentChatContext.searchId}_${currentChatContext.requestId}` === chatId) {
-                            chats[chatId].push({ sender: 'them', text: "Okay, sounds good!", timestamp: Date.now() });
+                            chats[chatId].push({ sender: 'them', text: "Got it! See you on the court.", timestamp: Date.now() });
                             renderChatScreen();
                         }
                     }, 1500);
                 }
             });
             chatMessageInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    sendChatMessageButton.click();
-                }
+                if (e.key === 'Enter') { sendChatMessageButton.click(); }
             });
 
 
-            // --- Event Listeners ---
             authButton.addEventListener('click', () => {
                 renderSportGrounds();
                 showScreen('grounds-list-screen');
@@ -905,7 +825,7 @@
                 const date = gameDateInput.value;
                 const startTime = startTimeInput.value;
                 const endTime = endTimeInput.value;
-                const teammatesNeeded = parseInt(teammatesNeededSelect.value);
+                const otherPlayersNeeded = parseInt(otherPlayersNeededSelect.value); // Changed ID
 
                 if (!date || !startTime || !endTime || !selectedSportCenter) {
                     alert('Please fill in all fields.'); return;
@@ -913,8 +833,8 @@
                 if (new Date(`${date}T${startTime}`) >= new Date(`${date}T${endTime}`)) {
                     alert('Start time must be before end time.'); return;
                 }
-                if (new Date(`${date}T${startTime}`) < new Date()) {
-                    alert('Cannot create search for a past date/time.'); return;
+                 if (new Date(`${date}T${startTime}`) < new Date()) { // Check if in the past
+                    alert('Cannot arrange a game for a past date/time.'); return;
                 }
 
                 const randomReq = getRandomRequester();
@@ -925,15 +845,15 @@
                     date: date,
                     startTime: startTime,
                     endTime: endTime,
-                    teammatesNeeded: teammatesNeeded,
+                    otherPlayersNeeded: otherPlayersNeeded, // Changed field name
                     playersJoined: 0,
-                    joinRequests: [ // Pre-populate with one mock request
+                    joinRequests: [
                         {
                             id: `req-${Date.now()}`,
                             requesterName: randomReq.name,
                             requesterAvatarColor: getRandomColor(),
                             requesterRating: randomReq.rating,
-                            requesterGames: randomReq.games,
+                            requesterGames: randomReq.games, // "games" in mock data, "Matches" in display
                             status: 'pending'
                         }
                     ]
@@ -950,7 +870,6 @@
                  renderSportGrounds();
                  showScreen('grounds-list-screen');
             });
-
 
             // --- Initial Setup ---
             showScreen('auth-screen');
