@@ -39,10 +39,10 @@
         canvas { 
             background: #FFFFFF; 
             display: block;
-            width: 100%;
+            width: calc(70vh * 3 / 4); /* Maintain 3:4 aspect ratio */
+            height: 70vh; /* 70% of viewport height */
             max-width: 400px;
-            height: auto;
-            aspect-ratio: 3 / 4;
+            max-height: 533px; /* Ensure it doesn't exceed max-width * 4/3 */
             margin: 0 auto;
             border: 2px solid #8F4B86;
             border-radius: 1rem;
@@ -69,7 +69,7 @@
         .tooltip:hover::after {
             opacity: 1;
         }
-        button:focus, input:focus {
+        button:focus, input:focus, select:focus {
             outline: 2px solid #F5A1C9;
             outline-offset: 2px;
         }
@@ -79,10 +79,10 @@
             padding: 2rem;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
         }
-        input, button {
+        input, button, select {
             transition: all 0.3s ease;
         }
-        input:focus, button:hover {
+        input:focus, button:hover, select:focus {
             transform: scale(1.05);
         }
         .notification {
@@ -107,12 +107,15 @@
         .incorrect {
             background: #FFB6C1;
         }
-        .start-button {
-            background: #FFFFFF;
-            color: #8F4B86 !important;
+        .error {
+            background: #FF6B6B;
         }
-        .start-button:hover {
-            background: #8F4B86 !important;
+        .action-button {
+            background: #FFFFFF;
+            color: #6B2A6C !important;
+        }
+        .action-button:hover {
+            background: #6B2A6C !important;
             color: #FFFFFF !important;
         }
     </style>
@@ -120,59 +123,251 @@
 <body>
     <!-- User Info Screen -->
     <div id="userInfoScreen" class="front-page max-w-md w-full text-white">
-        <h1 class="text-3xl font-bold mb-6 text-center">EPAM Brick Breaker</h1>
+        <h1 id="welcomeHeading" class="text-3xl font-bold mb-6 text-center">EPAM Brick Breaker</h1>
         <form id="userForm" class="space-y-4">
             <div>
-                <label for="name" class="block text-sm font-medium">Name</label>
-                    <input type="text" id="name" required class="mt-1 block w-full p-2 border border-white rounded-lg bg-white/20 text-white placeholder-white/50" placeholder="Enter your name">
+                <label for="name" id="nameLabel" class="block text-sm font-medium">Name</label>
+                <input type="text" id="name" required class="mt-1 block w-full p-2 border border-white rounded-lg bg-white/20 text-white placeholder-white/50" placeholder="Enter your name">
             </div>
             <div>
-                <label for="email" class="block text-sm font-medium">Email</label>
+                <label for="email" id="emailLabel" class="block text-sm font-medium">Email</label>
                 <input type="email" id="email" required class="mt-1 block w-full p-2 border border-white rounded-lg bg-white/20 text-white placeholder-white/50" placeholder="Enter your email">
+            </div>
+            <div>
+                <label for="language" id="languageLabel" class="block text-sm font-medium">Language</label>
+                <select id="language" class="mt-1 block w-full p-2 border border-white rounded-lg bg-white/20 text-white">
+                    <option value="en">English (EN)</option>
+                    <option value="hu">Hungarian (HU)</option>
+                </select>
             </div>
             <div class="flex items-center">
                 <input type="checkbox" id="dataConsent" required class="h-4 w-4 text-white border-white rounded">
-                <label for="dataConsent" class="ml-2 text-sm">I consent to personal data collection (required)</label>
+                <label for="dataConsent" id="dataConsentLabel" class="ml-2 text-sm">I consent to personal data collection (required)</label>
             </div>
             <div class="flex items-center">
                 <input type="checkbox" id="emailConsent" class="h-4 w-4 text-white border-white rounded">
-                <label for="emailConsent" class="ml-2 text-sm">I agree to receive EPAM emails (optional)</label>
+                <label for="emailConsent" id="emailConsentLabel" class="ml-2 text-sm">I agree to receive EPAM emails (optional)</label>
             </div>
-            <button type="submit" class="tooltip w-full start-button py-2 rounded-lg font-semibold" data-tooltip="Submit to start the game">Start Game</button>
+            <button type="submit" id="startButton" class="tooltip w-full action-button py-2 rounded-lg font-semibold" data-tooltip="Submit to start the game">Start Game</button>
         </form>
     </div>
 
     <!-- Game Screen -->
     <div id="gameScreen" class="hidden relative">
-        <canvas id="myCanvas" width="300" height="400" role="img" aria-label="Brick Breaker Game Canvas"></canvas>
+        <canvas id="myCanvas" role="img" aria-label="Brick Breaker Game Canvas"></canvas>
         <div id="popup" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 fancy-panel p-6 z-50 max-w-[90%] text-center text-white" role="dialog" aria-modal="true" aria-labelledby="popupText">
             <p id="popupText" class="text-lg font-semibold mb-4"></p>
-            <button id="popupBtn" class="tooltip bg-white text-#6B2A6C px-4 py-2 rounded-md hover:bg-#6B2A6C hover:text-white" data-tooltip="Click to continue the game" aria-label="Continue game">OK</button>
+            <button id="popupBtn" class="tooltip action-button px-4 py-2 rounded-md" data-tooltip="Click to continue the game" aria-label="Continue game">OK</button>
         </div>
     </div>
 
     <!-- Win Screen -->
     <div id="winScreen" class="hidden fancy-panel max-w-md w-full text-center text-white" role="region" aria-labelledby="result-heading">
-        <h1 id="winMessage" class="text-2xl font-bold mb-4" id="result-heading"></h1>
+        <h1 id="winMessage" class="text-2xl font-bold mb-4"></h1>
         <p id="finalScore" class="text-lg mb-6"></p>
-        <button id="quizBtn" class="tooltip bg-white text-#6B2A6C py-2 px-4 rounded-lg hover:bg-#6B2A6C hover:text-white" data-tooltip="Proceed to the EPAM quiz" aria-label="Go to Quiz">Go to Quiz</button>
+        <button id="quizBtn" class="tooltip action-button py-2 px-4 rounded-lg" data-tooltip="Proceed to the EPAM quiz" aria-label="Go to Quiz">Go to Quiz</button>
     </div>
 
     <!-- Quiz Screen -->
     <div id="quizScreen" class="hidden fancy-panel max-w-md w-full text-white" role="region" aria-labelledby="quiz-heading">
-        <h1 class="text-2xl font-bold mb-6 text-center" id="quiz-heading">EPAM Quiz</h1>
+        <h1 id="quizHeading" class="text-2xl font-bold mb-6 text-center">EPAM Quiz</h1>
         <div id="quizContent" class="space-y-4"></div>
         <div id="notification" class="notification hidden"></div>
     </div>
 
     <!-- Thank You Screen -->
     <div id="thankYouScreen" class="hidden fancy-panel max-w-md w-full text-center text-white" role="region" aria-labelledby="thankyou-heading">
-        <h1 class="text-2xl font-bold mb-4" id="thankyou-heading">Thank You!</h1>
-        <p class="text-lg mb-6">Thanks for playing and learning about EPAM!</p>
-        <button id="exportBtn" class="tooltip bg-white text-#6B2A6C py-2 px-4 rounded-lg hover:bg-#6B2A6C hover:text-white" data-tooltip="Download completed users data as CSV" aria-label="Export Completed Users">Export Completed Users</button>
+        <h1 id="thankYouHeading" class="text-2xl font-bold mb-4">Thank You!</h1>
+        <p id="thankYouText" class="text-lg mb-6">Thanks for playing and learning about EPAM!</p>
+        <button id="adminLoginBtn" class="tooltip action-button py-2 px-4 rounded-lg" data-tooltip="Login to access user data export">Login as Admin</button>
+    </div>
+
+    <!-- Admin Login Screen -->
+    <div id="adminScreen" class="hidden fancy-panel max-w-md w-full text-center text-white" role="region" aria-labelledby="admin-heading">
+        <h1 id="adminHeading" class="text-2xl font-bold mb-4">Admin Login</h1>
+        <input type="password" id="adminPassword" class="mt-1 block w-full p-2 border border-white rounded-lg bg-white/20 text-white placeholder-white/50" placeholder="Enter admin password">
+        <div id="adminError" class="notification error hidden mt-4">Incorrect password, try again!</div>
+        <button id="submitAdminBtn" class="tooltip action-button py-2 px-4 rounded-lg mt-4" data-tooltip="Submit password to access export">Submit</button>
+    </div>
+
+    <!-- Admin Export Screen -->
+    <div id="exportScreen" class="hidden fancy-panel max-w-md w-full text-center text-white" role="region" aria-labelledby="export-heading">
+        <h1 id="exportHeading" class="text-2xl font-bold mb-4">Export User Data</h1>
+        <button id="exportBtn" class="tooltip action-button py-2 px-4 rounded-lg" data-tooltip="Download completed users data as CSV" aria-label="Export Completed Users">Export Completed Users</button>
     </div>
 
     <script>
+        // Language translations
+        const translations = {
+            en: {
+                welcomeHeading: "EPAM Brick Breaker",
+                nameLabel: "Name",
+                namePlaceholder: "Enter your name",
+                emailLabel: "Email",
+                emailPlaceholder: "Enter your email",
+                languageLabel: "Language",
+                dataConsentLabel: "I consent to personal data collection (required)",
+                emailConsentLabel: "I agree to receive EPAM emails (optional)",
+                startButton: "Start Game",
+                startTooltip: "Submit to start the game",
+                popupOk: "OK",
+                popupOkTooltip: "Click to continue the game",
+                bigBrickMessages: [
+                    "Wow! You smashed an EPAM power brick!",
+                    "Great job crushing that EPAM giant!",
+                    "EPAM brick obliterated! Keep going!",
+                    "Massive EPAM block destroyed!",
+                    "You took down an EPAM titan brick!",
+                    "Epic! Another EPAM big brick gone!",
+                    "Boom! EPAM mega brick smashed!",
+                    "Nice hit on that EPAM monster brick!",
+                    "EPAM super brick demolished!",
+                    "Fantastic! EPAM colossal brick down!"
+                ],
+                winMessageWin: "Congratulations! You won!",
+                winMessageLose: "GAME OVER",
+                finalScore: "Your score: ",
+                quizBtn: "Go to Quiz",
+                quizBtnTooltip: "Proceed to the EPAM quiz",
+                quizHeading: "EPAM Quiz",
+                quizQuestions: [
+                    {
+                        question: "What is EPAM's unofficial mascot in its office lore?",
+                        options: ["Code Ninja", "Pixel Panda", "Bug Buster", "Cloud Dragon"],
+                        correct: "Pixel Panda"
+                    },
+                    {
+                        question: "Which quirky tradition do EPAM developers celebrate annually?",
+                        options: ["Pizza Hackathon", "Code & Coffee Day", "Bug Bash Fiesta", "Tech Karaoke Night"],
+                        correct: "Code & Coffee Day"
+                    },
+                    {
+                        question: "What’s the name of EPAM’s legendary internal hackathon?",
+                        options: ["CodeStorm", "TechTango", "HackSavvy", "ByteBlitz"],
+                        correct: "ByteBlitz"
+                    }
+                ],
+                correctNotification: "Correct!",
+                incorrectNotification: "Incorrect, try again!",
+                thankYouHeading: "Thank You!",
+                thankYouText: "Thanks for playing and learning about EPAM!",
+                adminLoginBtn: "Login as Admin",
+                adminLoginTooltip: "Login to access user data export",
+                adminHeading: "Admin Login",
+                adminPasswordPlaceholder: "Enter admin password",
+                adminError: "Incorrect password, try again!",
+                submitAdminBtn: "Submit",
+                submitAdminTooltip: "Submit password to access export",
+                exportHeading: "Export User Data",
+                exportBtn: "Export Completed Users",
+                exportBtnTooltip: "Download completed users data as CSV",
+                exportNoUsers: "No users have completed the quiz yet."
+            },
+            hu: {
+                welcomeHeading: "EPAM Tégla Törő",
+                nameLabel: "Név",
+                namePlaceholder: "Add meg a neved",
+                emailLabel: "E-mail",
+                emailPlaceholder: "Add meg az e-mail címed",
+                languageLabel: "Nyelv",
+                dataConsentLabel: "Hozzájárulok a személyes adatok gyűjtéséhez (kötelező)",
+                emailConsentLabel: "Hozzájárulok az EPAM e-mailek fogadásához (opcionális)",
+                startButton: "Játék indítása",
+                startTooltip: "Küldd el az adatokat a játék indításához",
+                popupOk: "OK",
+                popupOkTooltip: "Kattints a játék folytatásához",
+                bigBrickMessages: [
+                    "Hűha! Összetörtél egy EPAM erőteljes téglát!",
+                    "Nagyszerű munka, leromboltad az EPAM óriást!",
+                    "EPAM tégla szétzúzva! Csak így tovább!",
+                    "Hatalmas EPAM blokk megsemmisítve!",
+                    "Leromboltad az EPAM titán téglát!",
+                    "Epikus! Újabb EPAM nagy tégla eltűnt!",
+                    "Bumm! EPAM mega tégla szétzúzva!",
+                    "Szép találat az EPAM szörny téglán!",
+                    "EPAM szuper tégla lerombolva!",
+                    "Fantasztikus! EPAM kolosszális tégla leomlott!"
+                ],
+                winMessageWin: "Gratulálunk! Győztél!",
+                winMessageLose: "JÁTÉK VÉGE",
+                finalScore: "Pontszámod: ",
+                quizBtn: "Tovább a kvízre",
+                quizBtnTooltip: "Tovább az EPAM kvízre",
+                quizHeading: "EPAM Kvíz",
+                quizQuestions: [
+                    {
+                        question: "Mi az EPAM nem hivatalos kabalája az irodai legendák szerint?",
+                        options: ["Kód Ninja", "Pixel Panda", "Hiba Irtó", "Felhő Sárkány"],
+                        correct: "Pixel Panda"
+                    },
+                    {
+                        question: "Milyen ostoba hagyományt ünnepelnek évente az EPAM fejlesztők?",
+                        options: ["Pizza Hackathon", "Kód és Kávé Nap", "Hiba Irtó Fieszta", "Tech Karaoke Est"],
+                        correct: "Kód és Kávé Nap"
+                    },
+                    {
+                        question: "Mi az EPAM legendás belső hackathonjának neve?",
+                        options: ["Kódvihar", "TechTango", "HackOkos", "BájtVillám"],
+                        correct: "BájtVillám"
+                    }
+                ],
+                correctNotification: "Helyes!",
+                incorrectNotification: "Helytelen, próbáld újra!",
+                thankYouHeading: "Köszönjük!",
+                thankYouText: "Köszönjük, hogy játszottál és megismerted az EPAM-ot!",
+                adminLoginBtn: "Bejelentkezés adminisztrátorként",
+                adminLoginTooltip: "Jelentkezz be a felhasználói adatok exportálásához",
+                adminHeading: "Adminisztrátori bejelentkezés",
+                adminPasswordPlaceholder: "Add meg az admin jelszót",
+                adminError: "Helytelen jelszó, próbáld újra!",
+                submitAdminBtn: "Küldés",
+                submitAdminTooltip: "Add meg a jelszót az exportáláshoz",
+                exportHeading: "Felhasználói adatok exportálása",
+                exportBtn: "Befejezett felhasználók exportálása",
+                exportBtnTooltip: "Töltsd le a befejezett felhasználók adatait CSV formátumban",
+                exportNoUsers: "Még egyetlen felhasználó sem fejezte be a kvízt."
+            }
+        };
+
+        // Language handling
+        let currentLanguage = 'en';
+        function updateLanguage(lang) {
+            currentLanguage = lang;
+            const t = translations[lang];
+            document.getElementById('welcomeHeading').innerText = t.welcomeHeading;
+            document.getElementById('nameLabel').innerText = t.nameLabel;
+            document.getElementById('name').placeholder = t.namePlaceholder;
+            document.getElementById('emailLabel').innerText = t.emailLabel;
+            document.getElementById('email').placeholder = t.emailPlaceholder;
+            document.getElementById('languageLabel').innerText = t.languageLabel;
+            document.getElementById('dataConsentLabel').innerText = t.dataConsentLabel;
+            document.getElementById('emailConsentLabel').innerText = t.emailConsentLabel;
+            document.getElementById('startButton').innerText = t.startButton;
+            document.getElementById('startButton').setAttribute('data-tooltip', t.startTooltip);
+            document.getElementById('popupBtn').innerText = t.popupOk;
+            document.getElementById('popupBtn').setAttribute('data-tooltip', t.popupOkTooltip);
+            document.getElementById('quizBtn').innerText = t.quizBtn;
+            document.getElementById('quizBtn').setAttribute('data-tooltip', t.quizBtnTooltip);
+            document.getElementById('quizHeading').innerText = t.quizHeading;
+            document.getElementById('thankYouHeading').innerText = t.thankYouHeading;
+            document.getElementById('thankYouText').innerText = t.thankYouText;
+            document.getElementById('adminLoginBtn').innerText = t.adminLoginBtn;
+            document.getElementById('adminLoginBtn').setAttribute('data-tooltip', t.adminLoginTooltip);
+            document.getElementById('adminHeading').innerText = t.adminHeading;
+            document.getElementById('adminPassword').placeholder = t.adminPasswordPlaceholder;
+            document.getElementById('adminError').innerText = t.adminError;
+            document.getElementById('submitAdminBtn').innerText = t.submitAdminBtn;
+            document.getElementById('submitAdminBtn').setAttribute('data-tooltip', t.submitAdminTooltip);
+            document.getElementById('exportHeading').innerText = t.exportHeading;
+            document.getElementById('exportBtn').innerText = t.exportBtn;
+            document.getElementById('exportBtn').setAttribute('data-tooltip', t.exportBtnTooltip);
+        }
+
+        // Update language when dropdown changes
+        document.getElementById('language').addEventListener('change', function() {
+            updateLanguage(this.value);
+        });
+
         // Local storage for user data
         function saveUserData(name, email, dataConsent, emailConsent, completedQuiz = false) {
             const userData = {
@@ -181,7 +376,8 @@
                 dataConsent: dataConsent,
                 emailConsent: emailConsent,
                 completedQuiz: completedQuiz,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                language: currentLanguage
             };
             let users = JSON.parse(localStorage.getItem('brickBreakerUsers') || '[]');
             users.push(userData);
@@ -201,12 +397,12 @@
             let users = JSON.parse(localStorage.getItem('brickBreakerUsers') || '[]');
             let completed = users.filter(u => u.completedQuiz);
             if (completed.length === 0) {
-                alert('No users have completed the quiz yet.');
+                alert(translations[currentLanguage].exportNoUsers);
                 return;
             }
-            let csv = 'Name,Email,DataConsent,EmailConsent,Timestamp\n';
+            let csv = 'Name,Email,DataConsent,EmailConsent,Language,Timestamp\n';
             completed.forEach(u => {
-                csv += `"${u.name.replace(/"/g, '""')}",${u.email},${u.dataConsent},${u.emailConsent},${u.timestamp}\n`;
+                csv += `"${u.name.replace(/"/g, '""')}",${u.email},${u.dataConsent},${u.emailConsent},${u.language},${u.timestamp}\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
@@ -230,6 +426,7 @@
                 currentUserIndex = saveUserData(name, email, dataConsent, emailConsent);
                 document.getElementById('userInfoScreen').classList.add('hidden');
                 document.getElementById('gameScreen').classList.remove('hidden');
+                resizeCanvas();
                 startGame();
             }
         });
@@ -241,17 +438,36 @@
             this.value = e.target.value;
         });
 
+        // Admin Login Handling
+        document.getElementById('adminLoginBtn').addEventListener('click', function() {
+            document.getElementById('thankYouScreen').classList.add('hidden');
+            document.getElementById('adminScreen').classList.remove('hidden');
+            document.getElementById('adminPassword').focus();
+        });
+
+        document.getElementById('submitAdminBtn').addEventListener('click', function() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === '123') {
+                document.getElementById('adminScreen').classList.add('hidden');
+                document.getElementById('exportScreen').classList.remove('hidden');
+            } else {
+                const error = document.getElementById('adminError');
+                error.classList.remove('hidden');
+                setTimeout(() => error.classList.add('hidden'), 2000);
+            }
+        });
+
         // Game Logic
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
         var ballRadius = 8;
-        var x = canvas.width / 2;
-        var y = canvas.height - 30;
+        var x = 0;
+        var y = 0;
         var dx = 2;
         var dy = -2;
         var paddleHeight = 8;
         var paddleWidth = 80;
-        var paddleX = (canvas.width - paddleWidth) / 2;
+        var paddleX = 0;
         var rightPressed = false;
         var leftPressed = false;
         var smallBrickWidth = 50;
@@ -264,23 +480,41 @@
         var cellRowCount = 10;
         var cellStepX = smallBrickWidth + brickPadding;
         var cellStepY = smallBrickHeight + brickPadding;
-        var brickOffsetLeft = (canvas.width - (cellColCount * smallBrickWidth + (cellColCount - 1) * brickPadding)) / 2;
+        var brickOffsetLeft = 0;
         var score = 0;
         var lives = 3;
         var paused = false;
 
-        const bigBrickMessages = [
-            "Wow! You smashed an EPAM power brick!",
-            "Great job crushing that EPAM giant!",
-            "EPAM brick obliterated! Keep going!",
-            "Massive EPAM block destroyed!",
-            "You took down an EPAM titan brick!",
-            "Epic! Another EPAM big brick gone!",
-            "Boom! EPAM mega brick smashed!",
-            "Nice hit on that EPAM monster brick!",
-            "EPAM super brick demolished!",
-            "Fantastic! EPAM colossal brick down!"
-        ];
+        function resizeCanvas() {
+            const canvasHeight = Math.min(window.innerHeight * 0.7, 533); // 70% of viewport height, capped at max-height
+            const canvasWidth = canvasHeight * 3 / 4; // Maintain 3:4 aspect ratio
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+            // Recalculate game parameters
+            x = canvas.width / 2;
+            y = canvas.height - 30;
+            paddleX = (canvas.width - paddleWidth) / 2;
+            brickOffsetLeft = (canvas.width - (cellColCount * smallBrickWidth + (cellColCount - 1) * brickPadding)) / 2;
+            // Recalculate brick positions
+            bricks = [];
+            for (var i = 0; i < bigPositions.length; i++) {
+                var pos = bigPositions[i];
+                var brickX = brickOffsetLeft + pos.c * cellStepX;
+                var brickY = brickOffsetTop + pos.r * cellStepY;
+                bricks.push({ x: brickX, y: brickY, width: bigBrickWidth, height: bigBrickHeight, status: 1, isBig: true, message: translations[currentLanguage].bigBrickMessages[i] });
+            }
+            for (var r = 0; r < cellRowCount; r++) {
+                for (var c = 0; c < cellColCount; c++) {
+                    if (!occupied[r][c]) {
+                        var brickX = brickOffsetLeft + c * cellStepX;
+                        var brickY = brickOffsetTop + r * cellStepY;
+                        bricks.push({ x: brickX, y: brickY, width: smallBrickWidth, height: smallBrickHeight, status: 1, isBig: false });
+                    }
+                }
+            }
+        }
+
+        const bigBrickMessages = translations[currentLanguage].bigBrickMessages;
 
         var occupied = Array.from({length: cellRowCount}, () => Array(cellColCount).fill(false));
         var bigPositions = [];
@@ -319,6 +553,7 @@
         document.addEventListener("keyup", keyUpHandler, false);
         document.addEventListener("mousemove", mouseMoveHandler, false);
         document.addEventListener("touchmove", touchMoveHandler, false);
+        window.addEventListener('resize', resizeCanvas);
 
         function keyDownHandler(e) {
             if (e.key === "Right" || e.key === "ArrowRight") rightPressed = true;
@@ -422,7 +657,7 @@
         function drawScore() {
             ctx.font = "14px Arial";
             ctx.fillStyle = "#F5A1C9";
-            ctx.fillText("Score: " + score, 8, 18);
+            ctx.fillText(translations[currentLanguage].finalScore + score, 8, 18);
         }
 
         function drawLives() {
@@ -455,8 +690,8 @@
                     if (lives === 0) {
                         document.getElementById('gameScreen').classList.add('hidden');
                         document.getElementById('winScreen').classList.remove('hidden');
-                        document.getElementById('winMessage').innerText = "GAME OVER";
-                        document.getElementById('finalScore').innerText = "Your score: " + score;
+                        document.getElementById('winMessage').innerText = translations[currentLanguage].winMessageLose;
+                        document.getElementById('finalScore').innerText = translations[currentLanguage].finalScore + score;
                         clearInterval(interval);
                         return;
                     } else {
@@ -482,8 +717,8 @@
             if (bricksRemaining() === 0) {
                 document.getElementById('gameScreen').classList.add('hidden');
                 document.getElementById('winScreen').classList.remove('hidden');
-                document.getElementById('winMessage').innerText = "Congratulations! You won!";
-                document.getElementById('finalScore').innerText = "Your score: " + score;
+                document.getElementById('winMessage').innerText = translations[currentLanguage].winMessageWin;
+                document.getElementById('finalScore').innerText = translations[currentLanguage].finalScore + score;
                 clearInterval(interval);
                 return;
             }
@@ -496,24 +731,6 @@
         }
 
         // Quiz Logic
-        const quizQuestions = [
-            {
-                question: "What is EPAM's unofficial mascot in its office lore?",
-                options: ["Code Ninja", "Pixel Panda", "Bug Buster", "Cloud Dragon"],
-                correct: "Pixel Panda"
-            },
-            {
-                question: "Which quirky tradition do EPAM developers celebrate annually?",
-                options: ["Pizza Hackathon", "Code & Coffee Day", "Bug Bash Fiesta", "Tech Karaoke Night"],
-                correct: "Code & Coffee Day"
-            },
-            {
-                question: "What’s the name of EPAM’s legendary internal hackathon?",
-                options: ["CodeStorm", "TechTango", "HackSavvy", "ByteBlitz"],
-                correct: "ByteBlitz"
-            }
-        ];
-
         let currentQuestionIndex = 0;
 
         function showNotification(message, isCorrect) {
@@ -528,21 +745,21 @@
 
         function showQuestion() {
             const quizContent = document.getElementById('quizContent');
-            const question = quizQuestions[currentQuestionIndex];
+            const question = translations[currentLanguage].quizQuestions[currentQuestionIndex];
             quizContent.innerHTML = `
                 <p class="text-lg font-semibold">${question.question}</p>
                 <div class="space-y-2">
                     ${question.options.map(opt => `
-                        <button class="tooltip w-full bg-white/20 hover:bg-white/30 p-2 rounded-lg text-left transition duration-300 quiz-option" data-tooltip="Select this answer" data-answer="${opt}" aria-label="Answer: ${opt}">${opt}</button>
+                        <button class="tooltip w-full action-button p-2 rounded-lg text-left transition duration-300 quiz-option" data-tooltip="${translations[currentLanguage].startTooltip}" data-answer="${opt}" aria-label="Answer: ${opt}">${opt}</button>
                     `).join('')}
                 </div>
             `;
             document.querySelectorAll('.quiz-option').forEach(btn => {
                 btn.addEventListener('click', function() {
                     if (this.dataset.answer === question.correct) {
-                        showNotification("Correct!", true);
+                        showNotification(translations[currentLanguage].correctNotification, true);
                         currentQuestionIndex++;
-                        if (currentQuestionIndex < quizQuestions.length) {
+                        if (currentQuestionIndex < translations[currentLanguage].quizQuestions.length) {
                             setTimeout(showQuestion, 2000);
                         } else {
                             updateUserCompletedQuiz(currentUserIndex);
@@ -550,7 +767,7 @@
                             document.getElementById('thankYouScreen').classList.remove('hidden');
                         }
                     } else {
-                        showNotification("Incorrect, try again!", false);
+                        showNotification(translations[currentLanguage].incorrectNotification, false);
                     }
                 });
             });
@@ -563,6 +780,10 @@
         });
 
         document.getElementById('exportBtn').addEventListener('click', exportCompletedUsers);
+
+        // Initialize language and canvas
+        updateLanguage('en');
+        resizeCanvas();
     </script>
 </body>
 </html>
