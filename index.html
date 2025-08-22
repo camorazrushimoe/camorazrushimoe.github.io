@@ -2,21 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Brick Breaker with EPAM Quiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { 
-            background: linear-gradient(to bottom right, #8F4B86, #FFFFFF); 
+            background: linear-gradient(to bottom, #8F4B86, #F5A1C9, #FFFFFF); 
             font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
         }
         .fancy-panel {
-            background: linear-gradient(to bottom right, #8F4B86, #FFFFFF);
-            border-radius: 2rem;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 4px 8px rgba(255, 255, 255, 0.3);
-            padding: 2rem;
+            background: linear-gradient(to bottom, #6B2A6C, #FFFFFF);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2), inset 0 2px 4px rgba(255, 255, 255, 0.3);
+            padding: 1.5rem;
             position: relative;
             overflow: hidden;
+            width: 100%;
+            max-width: 400px;
         }
         .fancy-panel::before {
             content: '';
@@ -25,14 +33,18 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(245, 161, 201, 0.2) 0%, transparent 70%);
             transform: rotate(30deg);
         }
         canvas { 
             background: #FFFFFF; 
-            display: block; 
-            margin: 0 auto; 
-            border: 2px solid #8F4B86; 
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            aspect-ratio: 3 / 4;
+            margin: 0 auto;
+            border: 2px solid #8F4B86;
             border-radius: 1rem;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
@@ -45,7 +57,7 @@
             bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
-            background: #8F4B86;
+            background: #6B2A6C;
             color: #FFFFFF;
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
@@ -58,14 +70,14 @@
             opacity: 1;
         }
         button:focus, input:focus {
-            outline: 2px solid #8F4B86;
+            outline: 2px solid #F5A1C9;
             outline-offset: 2px;
         }
         .front-page {
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%238F4B86" fill-opacity="0.1"/><path d="M20,80 Q50,50 80,80" stroke="%238F4B86" stroke-width="2" fill="none"/></svg>') center/cover, linear-gradient(to bottom right, #8F4B86, #FFFFFF);
-            border-radius: 2rem;
-            padding: 3rem;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%238F4B86" fill-opacity="0.1"/><path d="M20,80 Q50,50 80,80" stroke="%238F4B86" stroke-width="2" fill="none"/></svg>') center/cover, linear-gradient(to bottom, #8F4B86, #F5A1C9);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
         }
         input, button {
             transition: all 0.3s ease;
@@ -73,60 +85,91 @@
         input:focus, button:hover {
             transform: scale(1.05);
         }
+        .notification {
+            position: fixed;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            color: #FFFFFF;
+            font-weight: bold;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .notification.show {
+            opacity: 1;
+        }
+        .correct {
+            background: #90EE90;
+        }
+        .incorrect {
+            background: #FFB6C1;
+        }
+        .start-button {
+            background: #FFFFFF;
+            color: #8F4B86 !important;
+        }
+        .start-button:hover {
+            background: #8F4B86 !important;
+            color: #FFFFFF !important;
+        }
     </style>
 </head>
-<body class="flex flex-col justify-center items-center min-h-screen p-4">
+<body>
     <!-- User Info Screen -->
     <div id="userInfoScreen" class="front-page max-w-md w-full text-white">
-        <h1 class="text-4xl font-bold mb-8 text-center">EPAM Brick Breaker</h1>
-        <form id="userForm" class="space-y-6">
+        <h1 class="text-3xl font-bold mb-6 text-center">EPAM Brick Breaker</h1>
+        <form id="userForm" class="space-y-4">
             <div>
                 <label for="name" class="block text-sm font-medium">Name</label>
-                <input type="text" id="name" required class="mt-1 block w-full p-3 border border-white rounded-lg bg-white/20 text-white placeholder-white/50" placeholder="Enter your name">
+                    <input type="text" id="name" required class="mt-1 block w-full p-2 border border-white rounded-lg bg-white/20 text-white placeholder-white/50" placeholder="Enter your name">
             </div>
             <div>
                 <label for="email" class="block text-sm font-medium">Email</label>
-                <input type="email" id="email" required class="mt-1 block w-full p-3 border border-white rounded-lg bg-white/20 text-white placeholder-white/50" placeholder="Enter your email">
+                <input type="email" id="email" required class="mt-1 block w-full p-2 border border-white rounded-lg bg-white/20 text-white placeholder-white/50" placeholder="Enter your email">
             </div>
             <div class="flex items-center">
-                <input type="checkbox" id="dataConsent" required class="h-5 w-5 text-white border-white rounded">
+                <input type="checkbox" id="dataConsent" required class="h-4 w-4 text-white border-white rounded">
                 <label for="dataConsent" class="ml-2 text-sm">I consent to personal data collection (required)</label>
             </div>
             <div class="flex items-center">
-                <input type="checkbox" id="emailConsent" class="h-5 w-5 text-white border-white rounded">
+                <input type="checkbox" id="emailConsent" class="h-4 w-4 text-white border-white rounded">
                 <label for="emailConsent" class="ml-2 text-sm">I agree to receive EPAM emails (optional)</label>
             </div>
-            <button type="submit" class="tooltip w-full bg-white text-#8F4B86 py-3 rounded-lg font-semibold hover:bg-#8F4B86 hover:text-white" data-tooltip="Submit to start the game">Start Game</button>
+            <button type="submit" class="tooltip w-full start-button py-2 rounded-lg font-semibold" data-tooltip="Submit to start the game">Start Game</button>
         </form>
     </div>
 
     <!-- Game Screen -->
     <div id="gameScreen" class="hidden relative">
-        <canvas id="myCanvas" width="800" height="600" class="max-w-full h-auto" role="img" aria-label="Brick Breaker Game Canvas"></canvas>
-        <div id="popup" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 fancy-panel p-6 z-50 max-w-sm text-center text-white" role="dialog" aria-modal="true" aria-labelledby="popupText">
+        <canvas id="myCanvas" width="300" height="400" role="img" aria-label="Brick Breaker Game Canvas"></canvas>
+        <div id="popup" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 fancy-panel p-6 z-50 max-w-[90%] text-center text-white" role="dialog" aria-modal="true" aria-labelledby="popupText">
             <p id="popupText" class="text-lg font-semibold mb-4"></p>
-            <button id="popupBtn" class="tooltip bg-white text-#8F4B86 px-4 py-2 rounded-md hover:bg-#8F4B86 hover:text-white" data-tooltip="Click to continue the game" aria-label="Continue game">OK</button>
+            <button id="popupBtn" class="tooltip bg-white text-#6B2A6C px-4 py-2 rounded-md hover:bg-#6B2A6C hover:text-white" data-tooltip="Click to continue the game" aria-label="Continue game">OK</button>
         </div>
     </div>
 
     <!-- Win Screen -->
     <div id="winScreen" class="hidden fancy-panel max-w-md w-full text-center text-white" role="region" aria-labelledby="result-heading">
-        <h1 id="winMessage" class="text-3xl font-bold mb-4" id="result-heading"></h1>
+        <h1 id="winMessage" class="text-2xl font-bold mb-4" id="result-heading"></h1>
         <p id="finalScore" class="text-lg mb-6"></p>
-        <button id="quizBtn" class="tooltip bg-white text-#8F4B86 py-2 px-4 rounded-lg hover:bg-#8F4B86 hover:text-white" data-tooltip="Proceed to the EPAM quiz" aria-label="Go to Quiz">Go to Quiz</button>
+        <button id="quizBtn" class="tooltip bg-white text-#6B2A6C py-2 px-4 rounded-lg hover:bg-#6B2A6C hover:text-white" data-tooltip="Proceed to the EPAM quiz" aria-label="Go to Quiz">Go to Quiz</button>
     </div>
 
     <!-- Quiz Screen -->
     <div id="quizScreen" class="hidden fancy-panel max-w-md w-full text-white" role="region" aria-labelledby="quiz-heading">
-        <h1 class="text-3xl font-bold mb-6 text-center" id="quiz-heading">EPAM Quiz</h1>
+        <h1 class="text-2xl font-bold mb-6 text-center" id="quiz-heading">EPAM Quiz</h1>
         <div id="quizContent" class="space-y-4"></div>
+        <div id="notification" class="notification hidden"></div>
     </div>
 
     <!-- Thank You Screen -->
     <div id="thankYouScreen" class="hidden fancy-panel max-w-md w-full text-center text-white" role="region" aria-labelledby="thankyou-heading">
-        <h1 class="text-3xl font-bold mb-4" id="thankyou-heading">Thank You!</h1>
+        <h1 class="text-2xl font-bold mb-4" id="thankyou-heading">Thank You!</h1>
         <p class="text-lg mb-6">Thanks for playing and learning about EPAM!</p>
-        <button id="exportBtn" class="tooltip bg-white text-#8F4B86 py-2 px-4 rounded-lg hover:bg-#8F4B86 hover:text-white" data-tooltip="Download completed users data as CSV" aria-label="Export Completed Users">Export Completed Users</button>
+        <button id="exportBtn" class="tooltip bg-white text-#6B2A6C py-2 px-4 rounded-lg hover:bg-#6B2A6C hover:text-white" data-tooltip="Download completed users data as CSV" aria-label="Export Completed Users">Export Completed Users</button>
     </div>
 
     <script>
@@ -191,7 +234,6 @@
             }
         });
 
-        // Ensure form inputs are editable
         document.getElementById('name').addEventListener('input', function(e) {
             this.value = e.target.value;
         });
@@ -199,33 +241,46 @@
             this.value = e.target.value;
         });
 
-        // Game Logic (unchanged)
+        // Game Logic
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
-        var ballRadius = 10;
+        var ballRadius = 8;
         var x = canvas.width / 2;
         var y = canvas.height - 30;
-        var dx = 3;
-        var dy = -3;
-        var paddleHeight = 10;
-        var paddleWidth = 100;
+        var dx = 2;
+        var dy = -2;
+        var paddleHeight = 8;
+        var paddleWidth = 80;
         var paddleX = (canvas.width - paddleWidth) / 2;
         var rightPressed = false;
         var leftPressed = false;
-        var smallBrickWidth = 70;
-        var smallBrickHeight = 20;
-        var bigBrickWidth = smallBrickWidth * 2 + 5;
-        var bigBrickHeight = smallBrickHeight * 2 + 5;
-        var brickPadding = 5;
-        var brickOffsetTop = 30;
-        var cellColCount = 10;
-        var cellRowCount = 8;
+        var smallBrickWidth = 50;
+        var smallBrickHeight = 15;
+        var bigBrickWidth = smallBrickWidth * 2 + 4;
+        var bigBrickHeight = smallBrickHeight * 2 + 4;
+        var brickPadding = 4;
+        var brickOffsetTop = 20;
+        var cellColCount = 6;
+        var cellRowCount = 10;
         var cellStepX = smallBrickWidth + brickPadding;
         var cellStepY = smallBrickHeight + brickPadding;
         var brickOffsetLeft = (canvas.width - (cellColCount * smallBrickWidth + (cellColCount - 1) * brickPadding)) / 2;
         var score = 0;
         var lives = 3;
         var paused = false;
+
+        const bigBrickMessages = [
+            "Wow! You smashed an EPAM power brick!",
+            "Great job crushing that EPAM giant!",
+            "EPAM brick obliterated! Keep going!",
+            "Massive EPAM block destroyed!",
+            "You took down an EPAM titan brick!",
+            "Epic! Another EPAM big brick gone!",
+            "Boom! EPAM mega brick smashed!",
+            "Nice hit on that EPAM monster brick!",
+            "EPAM super brick demolished!",
+            "Fantastic! EPAM colossal brick down!"
+        ];
 
         var occupied = Array.from({length: cellRowCount}, () => Array(cellColCount).fill(false));
         var bigPositions = [];
@@ -248,7 +303,7 @@
             var pos = bigPositions[i];
             var brickX = brickOffsetLeft + pos.c * cellStepX;
             var brickY = brickOffsetTop + pos.r * cellStepY;
-            bricks.push({ x: brickX, y: brickY, width: bigBrickWidth, height: bigBrickHeight, status: 1, isBig: true });
+            bricks.push({ x: brickX, y: brickY, width: bigBrickWidth, height: bigBrickHeight, status: 1, isBig: true, message: bigBrickMessages[i] });
         }
         for (var r = 0; r < cellRowCount; r++) {
             for (var c = 0; c < cellColCount; c++) {
@@ -307,7 +362,7 @@
         function drawBall() {
             ctx.beginPath();
             ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-            ctx.fillStyle = "#8F4B86";
+            ctx.fillStyle = "#F5A1C9";
             ctx.fill();
             ctx.closePath();
         }
@@ -315,7 +370,7 @@
         function drawPaddle() {
             ctx.beginPath();
             ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-            ctx.fillStyle = "#8F4B86";
+            ctx.fillStyle = "#6B2A6C";
             ctx.fill();
             ctx.closePath();
         }
@@ -329,6 +384,13 @@
                     ctx.fillStyle = brick.isBig ? "#FF0000" : "#8F4B86";
                     ctx.fill();
                     ctx.closePath();
+                    if (brick.isBig) {
+                        ctx.font = "12px Arial";
+                        ctx.fillStyle = "#FFFFFF";
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "middle";
+                        ctx.fillText("EPAM", brick.x + brick.width / 2, brick.y + brick.height / 2);
+                    }
                 }
             }
         }
@@ -342,7 +404,7 @@
                         b.status--;
                         score++;
                         if (b.status === 0 && b.isBig) {
-                            showPopup("Congratulations! You destroyed a massive brick!");
+                            showPopup(b.message);
                         }
                     }
                 }
@@ -358,15 +420,15 @@
         }
 
         function drawScore() {
-            ctx.font = "16px Arial";
-            ctx.fillStyle = "#8F4B86";
-            ctx.fillText("Score: " + score, 8, 20);
+            ctx.font = "14px Arial";
+            ctx.fillStyle = "#F5A1C9";
+            ctx.fillText("Score: " + score, 8, 18);
         }
 
         function drawLives() {
-            ctx.font = "16px Arial";
-            ctx.fillStyle = "#8F4B86";
-            ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
+            ctx.font = "14px Arial";
+            ctx.fillStyle = "#F5A1C9";
+            ctx.fillText("Lives: " + lives, canvas.width - 50, 18);
         }
 
         function draw() {
@@ -400,18 +462,18 @@
                     } else {
                         x = canvas.width / 2;
                         y = canvas.height - 30;
-                        dx = 3;
-                        dy = -3;
+                        dx = 2;
+                        dy = -2;
                         paddleX = (canvas.width - paddleWidth) / 2;
                     }
                 }
             }
 
             if (rightPressed && paddleX < canvas.width - paddleWidth) {
-                paddleX += 7;
+                paddleX += 5;
             }
             if (leftPressed && paddleX > 0) {
-                paddleX -= 7;
+                paddleX -= 5;
             }
 
             x += dx;
@@ -454,6 +516,16 @@
 
         let currentQuestionIndex = 0;
 
+        function showNotification(message, isCorrect) {
+            const notification = document.getElementById('notification');
+            notification.innerText = message;
+            notification.classList.remove('hidden', 'correct', 'incorrect');
+            notification.classList.add(isCorrect ? 'correct' : 'incorrect');
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 2000);
+        }
+
         function showQuestion() {
             const quizContent = document.getElementById('quizContent');
             const question = quizQuestions[currentQuestionIndex];
@@ -468,14 +540,17 @@
             document.querySelectorAll('.quiz-option').forEach(btn => {
                 btn.addEventListener('click', function() {
                     if (this.dataset.answer === question.correct) {
+                        showNotification("Correct!", true);
                         currentQuestionIndex++;
                         if (currentQuestionIndex < quizQuestions.length) {
-                            showQuestion();
+                            setTimeout(showQuestion, 2000);
                         } else {
                             updateUserCompletedQuiz(currentUserIndex);
                             document.getElementById('quizScreen').classList.add('hidden');
                             document.getElementById('thankYouScreen').classList.remove('hidden');
                         }
+                    } else {
+                        showNotification("Incorrect, try again!", false);
                     }
                 });
             });
