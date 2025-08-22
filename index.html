@@ -7,11 +7,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { 
-            background: linear-gradient(to bottom right, #f3e8ff, #fce7f3); 
+            background: linear-gradient(to bottom right, #8F4B86, #FFFFFF); 
             font-family: 'Arial', sans-serif;
         }
         .fancy-panel {
-            background: linear-gradient(to bottom right, #a855f7, #ec4899);
+            background: linear-gradient(to bottom right, #8F4B86, #FFFFFF);
             border-radius: 2rem;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 4px 8px rgba(255, 255, 255, 0.3);
             padding: 2rem;
@@ -29,10 +29,10 @@
             transform: rotate(30deg);
         }
         canvas { 
-            background: #e5e7eb; 
+            background: #FFFFFF; 
             display: block; 
             margin: 0 auto; 
-            border: 2px solid #a855f7; 
+            border: 2px solid #8F4B86; 
             border-radius: 1rem;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
@@ -45,8 +45,8 @@
             bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
-            background: #6b21a8;
-            color: white;
+            background: #8F4B86;
+            color: #FFFFFF;
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
             white-space: nowrap;
@@ -58,42 +58,54 @@
             opacity: 1;
         }
         button:focus, input:focus {
-            outline: 2px solid #ec4899;
+            outline: 2px solid #8F4B86;
             outline-offset: 2px;
+        }
+        .front-page {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%238F4B86" fill-opacity="0.1"/><path d="M20,80 Q50,50 80,80" stroke="%238F4B86" stroke-width="2" fill="none"/></svg>') center/cover, linear-gradient(to bottom right, #8F4B86, #FFFFFF);
+            border-radius: 2rem;
+            padding: 3rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        input, button {
+            transition: all 0.3s ease;
+        }
+        input:focus, button:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen p-4">
     <!-- User Info Screen -->
-    <div id="userInfoScreen" class="fancy-panel max-w-md w-full text-white" role="region" aria-labelledby="welcome-heading">
-        <h1 id="welcome-heading" class="text-3xl font-bold mb-6 text-center">Welcome to Brick Breaker!</h1>
-        <form id="userForm" class="space-y-4">
+    <div id="userInfoScreen" class="front-page max-w-md w-full text-white">
+        <h1 class="text-4xl font-bold mb-8 text-center">EPAM Brick Breaker</h1>
+        <form id="userForm" class="space-y-6">
             <div>
                 <label for="name" class="block text-sm font-medium">Name</label>
-                <input type="text" id="name" required class="mt-1 block w-full p-2 border border-purple-300 rounded-lg bg-white/20 text-white placeholder-gray-200" placeholder="Enter your name">
+                <input type="text" id="name" required class="mt-1 block w-full p-3 border border-white rounded-lg bg-white/20 text-white placeholder-white/50" placeholder="Enter your name">
             </div>
             <div>
                 <label for="email" class="block text-sm font-medium">Email</label>
-                <input type="email" id="email" required class="mt-1 block w-full p-2 border border-purple-300 rounded-lg bg-white/20 text-white placeholder-gray-200" placeholder="Enter your email">
+                <input type="email" id="email" required class="mt-1 block w-full p-3 border border-white rounded-lg bg-white/20 text-white placeholder-white/50" placeholder="Enter your email">
             </div>
             <div class="flex items-center">
-                <input type="checkbox" id="dataConsent" required class="h-4 w-4 text-pink-600 border-gray-300 rounded">
+                <input type="checkbox" id="dataConsent" required class="h-5 w-5 text-white border-white rounded">
                 <label for="dataConsent" class="ml-2 text-sm">I consent to personal data collection (required)</label>
             </div>
             <div class="flex items-center">
-                <input type="checkbox" id="emailConsent" class="h-4 w-4 text-pink-600 border-gray-300 rounded">
+                <input type="checkbox" id="emailConsent" class="h-5 w-5 text-white border-white rounded">
                 <label for="emailConsent" class="ml-2 text-sm">I agree to receive EPAM emails (optional)</label>
             </div>
-            <button type="submit" class="tooltip w-full bg-pink-500 hover:bg-pink-600 text-white py-2 rounded-lg transition duration-300" data-tooltip="Submit your info to start the game" aria-label="Start Game">Start Game</button>
+            <button type="submit" class="tooltip w-full bg-white text-#8F4B86 py-3 rounded-lg font-semibold hover:bg-#8F4B86 hover:text-white" data-tooltip="Submit to start the game">Start Game</button>
         </form>
     </div>
 
     <!-- Game Screen -->
     <div id="gameScreen" class="hidden relative">
-        <canvas id="myCanvas" width="800" height="600" class="max-w-full h-auto" aria-label="Brick Breaker Game Canvas"></canvas>
-        <div id="popup" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 fancy-panel p-6 z-50 max-w-sm text-center text-white" role="dialog" aria-modal="true">
+        <canvas id="myCanvas" width="800" height="600" class="max-w-full h-auto" role="img" aria-label="Brick Breaker Game Canvas"></canvas>
+        <div id="popup" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 fancy-panel p-6 z-50 max-w-sm text-center text-white" role="dialog" aria-modal="true" aria-labelledby="popupText">
             <p id="popupText" class="text-lg font-semibold mb-4"></p>
-            <button id="popupBtn" class="tooltip bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-md" data-tooltip="Click to continue the game" aria-label="OK">OK</button>
+            <button id="popupBtn" class="tooltip bg-white text-#8F4B86 px-4 py-2 rounded-md hover:bg-#8F4B86 hover:text-white" data-tooltip="Click to continue the game" aria-label="Continue game">OK</button>
         </div>
     </div>
 
@@ -101,7 +113,7 @@
     <div id="winScreen" class="hidden fancy-panel max-w-md w-full text-center text-white" role="region" aria-labelledby="result-heading">
         <h1 id="winMessage" class="text-3xl font-bold mb-4" id="result-heading"></h1>
         <p id="finalScore" class="text-lg mb-6"></p>
-        <button id="quizBtn" class="tooltip bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded-lg transition duration-300" data-tooltip="Proceed to the EPAM quiz" aria-label="Go to Quiz">Go to Quiz</button>
+        <button id="quizBtn" class="tooltip bg-white text-#8F4B86 py-2 px-4 rounded-lg hover:bg-#8F4B86 hover:text-white" data-tooltip="Proceed to the EPAM quiz" aria-label="Go to Quiz">Go to Quiz</button>
     </div>
 
     <!-- Quiz Screen -->
@@ -114,7 +126,7 @@
     <div id="thankYouScreen" class="hidden fancy-panel max-w-md w-full text-center text-white" role="region" aria-labelledby="thankyou-heading">
         <h1 class="text-3xl font-bold mb-4" id="thankyou-heading">Thank You!</h1>
         <p class="text-lg mb-6">Thanks for playing and learning about EPAM!</p>
-        <button id="exportBtn" class="tooltip bg-pink-500 hover:bg-pink-600 text-white py-2 px-4 rounded-lg transition duration-300" data-tooltip="Download completed users data as CSV" aria-label="Export Completed Users">Export Completed Users</button>
+        <button id="exportBtn" class="tooltip bg-white text-#8F4B86 py-2 px-4 rounded-lg hover:bg-#8F4B86 hover:text-white" data-tooltip="Download completed users data as CSV" aria-label="Export Completed Users">Export Completed Users</button>
     </div>
 
     <script>
@@ -131,7 +143,7 @@
             let users = JSON.parse(localStorage.getItem('brickBreakerUsers') || '[]');
             users.push(userData);
             localStorage.setItem('brickBreakerUsers', JSON.stringify(users));
-            return users.length - 1; // Return index for later update
+            return users.length - 1;
         }
 
         function updateUserCompletedQuiz(index) {
@@ -151,7 +163,7 @@
             }
             let csv = 'Name,Email,DataConsent,EmailConsent,Timestamp\n';
             completed.forEach(u => {
-                csv += `${u.name},${u.email},${u.dataConsent},${u.emailConsent},${u.timestamp}\n`;
+                csv += `"${u.name.replace(/"/g, '""')}",${u.email},${u.dataConsent},${u.emailConsent},${u.timestamp}\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
@@ -167,16 +179,24 @@
         const userForm = document.getElementById('userForm');
         userForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
             const dataConsent = document.getElementById('dataConsent').checked;
             const emailConsent = document.getElementById('emailConsent').checked;
-            if (dataConsent) {
+            if (dataConsent && name && email) {
                 currentUserIndex = saveUserData(name, email, dataConsent, emailConsent);
                 document.getElementById('userInfoScreen').classList.add('hidden');
                 document.getElementById('gameScreen').classList.remove('hidden');
                 startGame();
             }
+        });
+
+        // Ensure form inputs are editable
+        document.getElementById('name').addEventListener('input', function(e) {
+            this.value = e.target.value;
+        });
+        document.getElementById('email').addEventListener('input', function(e) {
+            this.value = e.target.value;
         });
 
         // Game Logic (unchanged)
@@ -287,7 +307,7 @@
         function drawBall() {
             ctx.beginPath();
             ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-            ctx.fillStyle = "#ec4899";
+            ctx.fillStyle = "#8F4B86";
             ctx.fill();
             ctx.closePath();
         }
@@ -295,7 +315,7 @@
         function drawPaddle() {
             ctx.beginPath();
             ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-            ctx.fillStyle = "#a855f7";
+            ctx.fillStyle = "#8F4B86";
             ctx.fill();
             ctx.closePath();
         }
@@ -306,7 +326,7 @@
                 if (brick.status > 0) {
                     ctx.beginPath();
                     ctx.rect(brick.x, brick.y, brick.width, brick.height);
-                    ctx.fillStyle = brick.isBig ? "#ef4444" : "#a855f7";
+                    ctx.fillStyle = brick.isBig ? "#FF0000" : "#8F4B86";
                     ctx.fill();
                     ctx.closePath();
                 }
@@ -339,13 +359,13 @@
 
         function drawScore() {
             ctx.font = "16px Arial";
-            ctx.fillStyle = "#ec4899";
+            ctx.fillStyle = "#8F4B86";
             ctx.fillText("Score: " + score, 8, 20);
         }
 
         function drawLives() {
             ctx.font = "16px Arial";
-            ctx.fillStyle = "#ec4899";
+            ctx.fillStyle = "#8F4B86";
             ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
         }
 
