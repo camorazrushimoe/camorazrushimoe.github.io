@@ -2,879 +2,472 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Padel Partner Finder POC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brick Breaker with EPAM Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-
-        :root {
-            --primary-color: #007bff; /* Blue - Padel often uses blues, greens, oranges */
-            /* Consider a Padel-themed primary color like a vibrant teal or orange */
-            /* --primary-color: #FF6F00; /* Padel Orange */
-            --secondary-color: #6c757d;
-            --success-color: #28a745;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-            --light-color: #f8f9fa;
-            --dark-color: #343a40;
-            --background-color: #eef1f5;
-            --text-color: #333;
-            --card-background: #ffffff;
-            --border-radius: 8px;
-            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        body { 
+            background: linear-gradient(to bottom right, #f3e8ff, #fce7f3); 
+            font-family: 'Arial', sans-serif;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            overscroll-behavior-y: contain;
-        }
-
-        .app-container {
-            max-width: 480px;
-            margin: 0 auto;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+        .fancy-panel {
+            background: linear-gradient(to bottom right, #a855f7, #ec4899);
+            border-radius: 2rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 4px 8px rgba(255, 255, 255, 0.3);
+            padding: 2rem;
             position: relative;
-            overflow-x: hidden;
+            overflow: hidden;
         }
-
-        .screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            width: 100%;
-            flex-grow: 1;
-            animation: fadeIn 0.5s ease-in-out;
+        .fancy-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            transform: rotate(30deg);
         }
-
-        .screen.active {
-            display: flex;
+        canvas { 
+            background: #e5e7eb; 
+            display: block; 
+            margin: 0 auto; 
+            border: 2px solid #a855f7; 
+            border-radius: 1rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .tooltip {
+            position: relative;
         }
-
-        .app-header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 15px 20px;
-            text-align: center;
-            font-size: 1.2em;
-            font-weight: 600;
-            box-shadow: var(--box-shadow);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .app-header .nav-button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1em;
-            padding: 8px;
-            cursor: pointer;
-            border-radius: var(--border-radius);
-            transition: background-color 0.3s ease;
-            min-width: 40px;
-            text-align: center;
-        }
-        .app-header .nav-button:hover {
-            background-color: rgba(255,255,255,0.2);
-        }
-        .app-header .back-button { font-size: 1.5em; }
-        .app-header .burger-button { font-size: 1.5em; }
-        #headerTitle { flex-grow: 1; text-align: center; }
-
-
-        h1, h2, h3 {
-            color: var(--primary-color);
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        h2.page-title {
-            font-size: 1.8em;
-            color: var(--dark-color);
-            margin-top: 10px;
-            width: 100%;
-        }
-
-
-        .button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: var(--border-radius);
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            text-align: center;
-            display: inline-block;
-            margin-top: 15px;
-            width: 100%;
-            max-width: 300px;
-        }
-
-        .button:hover {
-            background-color: #0056b3; /* Darker primary */
-            transform: translateY(-2px);
-        }
-        .button:active { transform: translateY(0px); }
-
-        .button-secondary { background-color: var(--secondary-color); }
-        .button-secondary:hover { background-color: #545b62; }
-        .button-success { background-color: var(--success-color); }
-        .button-success:hover { background-color: #1e7e34; }
-        .button-danger { background-color: var(--danger-color); }
-        .button-danger:hover { background-color: #b02a37; }
-        .button-warning { background-color: var(--warning-color); color: var(--dark-color); }
-        .button-warning:hover { background-color: #d39e00; }
-
-
-        .list-item {
-            background-color: var(--card-background);
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            width: 100%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .list-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-        }
-        .list-item h3 { margin-bottom: 5px; color: var(--primary-color); }
-        .list-item p { font-size: 0.9em; color: var(--secondary-color); }
-
-        .form-group {
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 350px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark-color);
-        }
-
-        .form-group input[type="date"],
-        .form-group input[type="time"],
-        .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: var(--border-radius);
-            font-size: 1em;
-            background-color: white;
-        }
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25); /* Use primary color alpha */
-        }
-
-        .time-window { display: flex; gap: 10px; }
-        .time-window > div { flex: 1; }
-
-        .card {
-            background-color: var(--card-background);
-            padding: 20px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            width: 100%;
-            max-width: 400px;
-            margin-top: 20px;
-        }
-        .card h3 { color: var(--primary-color); margin-bottom: 10px; }
-        .card p { margin-bottom: 8px; color: var(--text-color); }
-        .card p strong { color: var(--dark-color); }
-
-        #auth-screen { justify-content: center; }
-        #auth-screen .logo { font-size: 3em; color: var(--primary-color); margin-bottom: 30px; font-weight: 700; }
-        #auth-screen p { margin-bottom: 30px; color: var(--secondary-color); font-size: 1.1em; }
-
-        .join-request-card {
-            background-color: var(--light-color);
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-top: 15px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-        }
-        .join-request-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .avatar-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            color: white;
-            font-size: 1.2em;
-        }
-        .join-request-info h4 { color: var(--dark-color); margin-bottom: 3px; font-size: 1.1em;}
-        .join-request-info p { font-size: 0.8em; color: var(--secondary-color); margin: 0; }
-        .join-request-actions { display: flex; gap: 10px; margin-top: 10px; }
-        .join-request-actions .button { flex: 1; padding: 8px 10px; font-size: 0.9em; margin-top: 0; }
-
-        .status-message {
-            padding: 10px;
-            border-radius: var(--border-radius);
-            margin-top: 15px;
-            text-align: center;
-            font-weight: 500;
-        }
-        .status-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;}
-        .status-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;}
-        .status-warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-
-
-        #chat-screen { padding-bottom: 80px; }
-        #chatMessagesContainer {
-            width: 100%;
-            max-width: 400px;
-            height: calc(100vh - 220px);
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            padding: 10px;
-            background-color: white;
-            border-radius: var(--border-radius);
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-        }
-        .chat-message {
-            padding: 8px 12px;
-            border-radius: 15px;
-            margin-bottom: 8px;
-            max-width: 70%;
-            word-wrap: break-word;
-        }
-        .chat-message.user {
-            background-color: var(--primary-color);
-            color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: 5px;
-        }
-        .chat-message.them {
-            background-color: #e9ecef;
-            color: var(--dark-color);
-            align-self: flex-start;
-            border-bottom-left-radius: 5px;
-        }
-        #chatInputContainer {
-            display: flex;
-            width: 100%;
-            max-width: 400px;
-            position: fixed;
-            bottom: 0;
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
             left: 50%;
             transform: translateX(-50%);
-            background-color: var(--card-background);
-            padding: 10px;
-            border-top: 1px solid #ddd;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
-        }
-        #chat-screen #chatInputContainer { display: none; }
-        #chat-screen.active #chatInputContainer { display: flex; }
-        #chatMessageInput {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: var(--border-radius);
-            margin-right: 10px;
-        }
-        #sendChatMessageButton { padding: 10px 15px; }
-
-        .nav-overlay {
-            position: fixed;
-            top: 0;
-            left: -280px;
-            width: 250px;
-            height: 100%;
-            background-color: var(--dark-color);
-            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
-            z-index: 1001;
-            transition: left 0.3s ease-in-out;
-            padding-top: 70px;
-        }
-        .nav-overlay.open { left: 0; }
-        .nav-overlay ul { list-style: none; padding: 0; margin: 0; }
-        .nav-overlay ul li a {
-            display: block;
-            padding: 15px 20px;
+            background: #6b21a8;
             color: white;
-            text-decoration: none;
-            font-size: 1.1em;
-            border-bottom: 1px solid #495057;
-            transition: background-color 0.2s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
         }
-        .nav-overlay ul li a:hover { background-color: var(--primary-color); }
-        .nav-overlay-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1000;
-            display: none;
+        .tooltip:hover::after {
+            opacity: 1;
         }
-        .nav-overlay-backdrop.open { display: block; }
-
-        .text-center { text-align: center; }
-        .mt-20 { margin-top: 20px; }
-        .w-100 { width: 100%; }
+        button:focus, input:focus {
+            outline: 2px solid #ec4899;
+            outline-offset: 2px;
+        }
     </style>
 </head>
-<body>
-    <div class="app-container">
-        <div id="navOverlayBackdrop" class="nav-overlay-backdrop"></div>
-        <nav id="navOverlay" class="nav-overlay">
-            <ul>
-                <li><a href="#" id="navHome">Home</a></li>
-                <li><a href="#" id="navMyPadelGames">My Padel Games</a></li>
-                <li><a href="#" id="navCreateNewGame">Create New Game</a></li>
-            </ul>
-        </nav>
-
-        <header class="app-header">
-            <button id="burgerButton" class="nav-button burger-button">&#9776;</button>
-            <span id="headerTitle">Padel Partner</span>
-            <button id="backButton" class="nav-button back-button" style="visibility: hidden;">&larr;</button>
-        </header>
-
-        <!-- Screen 1: Authorisation -->
-        <div id="auth-screen" class="screen active">
-            <div class="logo">PadelUp!</div> <!-- Padel-themed logo text -->
-            <p>Find partners for your next Padel match.</p>
-            <button id="authButton" class="button">Get Started</button>
-        </div>
-
-        <!-- Screen 2: Padel Club List -->
-        <div id="grounds-list-screen" class="screen">
-            <h2 class="page-title">Choose a Padel Club</h2>
-            <div id="sportGroundsListContainer" class="list-container w-100" style="max-width: 400px;"></div>
-        </div>
-
-        <!-- Screen 3: Padel Game Form -->
-        <div id="sport-center-form-screen" class="screen">
-            <h2 id="sportCenterNameTitle" class="page-title">Arrange a Padel Game</h2>
-            <div class="form-group">
-                <label for="gameDate">Date:</label>
-                <input type="date" id="gameDate">
+<body class="flex flex-col justify-center items-center min-h-screen p-4">
+    <!-- User Info Screen -->
+    <div id="userInfoScreen" class="fancy-panel max-w-md w-full text-white" role="region" aria-labelledby="welcome-heading">
+        <h1 id="welcome-heading" class="text-3xl font-bold mb-6 text-center">Welcome to Brick Breaker!</h1>
+        <form id="userForm" class="space-y-4">
+            <div>
+                <label for="name" class="block text-sm font-medium">Name</label>
+                <input type="text" id="name" required class="mt-1 block w-full p-2 border border-purple-300 rounded-lg bg-white/20 text-white placeholder-gray-200" placeholder="Enter your name">
             </div>
-            <div class="form-group">
-                <label>Time Window:</label>
-                <div class="time-window">
-                    <div>
-                        <label for="startTime" style="font-size:0.8em; font-weight:normal;">Start Time</label>
-                        <input type="time" id="startTime">
-                    </div>
-                    <div>
-                        <label for="endTime" style="font-size:0.8em; font-weight:normal;">End Time</label>
-                        <input type="time" id="endTime">
-                    </div>
-                </div>
+            <div>
+                <label for="email" class="block text-sm font-medium">Email</label>
+                <input type="email" id="email" required class="mt-1 block w-full p-2 border border-purple-300 rounded-lg bg-white/20 text-white placeholder-gray-200" placeholder="Enter your email">
             </div>
-            <div class="form-group">
-                <label for="otherPlayersNeeded">Other Players Needed (besides yourself):</label>
-                <select id="otherPlayersNeeded">
-                    <option value="1">1 Player (Total 2)</option>
-                    <option value="2">2 Players (Total 3)</option>
-                    <option value="3" selected>3 Players (Total 4 for a full game)</option>
-                </select>
+            <div class="flex items-center">
+                <input type="checkbox" id="dataConsent" required class="h-4 w-4 text-pink-600 border-gray-300 rounded">
+                <label for="dataConsent" class="ml-2 text-sm">I consent to personal data collection (required)</label>
             </div>
-            <button id="findTeamButton" class="button">Find Players</button>
-        </div>
+            <div class="flex items-center">
+                <input type="checkbox" id="emailConsent" class="h-4 w-4 text-pink-600 border-gray-300 rounded">
+                <label for="emailConsent" class="ml-2 text-sm">I agree to receive EPAM emails (optional)</label>
+            </div>
+            <button type="submit" class="tooltip w-full bg-pink-500 hover:bg-pink-600 text-white py-2 rounded-lg transition duration-300" data-tooltip="Submit your info to start the game" aria-label="Start Game">Start Game</button>
+        </form>
+    </div>
 
-        <!-- Screen 4: Padel Game Details Page -->
-        <div id="team-looking-screen" class="screen">
-            <h2 id="teamLookingTitle" class="page-title w-100">Padel Game Details</h2>
-            <div id="teamLookingDetailsCard" class="card w-100">
-                <!-- Search details will be populated here -->
-            </div>
-            <div id="joinRequestsContainer" class="w-100" style="max-width: 400px;">
-                <!-- Join requests will be populated here -->
-            </div>
-             <div id="teamLookingStatusMessage" class="status-message" style="display:none;"></div>
-            <button id="createNewSearchFromLookingButton" class="button button-secondary mt-20">Arrange Another Game</button>
+    <!-- Game Screen -->
+    <div id="gameScreen" class="hidden relative">
+        <canvas id="myCanvas" width="800" height="600" class="max-w-full h-auto" aria-label="Brick Breaker Game Canvas"></canvas>
+        <div id="popup" class="hidden fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 fancy-panel p-6 z-50 max-w-sm text-center text-white" role="dialog" aria-modal="true">
+            <p id="popupText" class="text-lg font-semibold mb-4"></p>
+            <button id="popupBtn" class="tooltip bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-md" data-tooltip="Click to continue the game" aria-label="OK">OK</button>
         </div>
+    </div>
 
-        <!-- Screen 5: My Padel Games List -->
-        <div id="my-searches-screen" class="screen">
-            <h2 class="page-title w-100">My Padel Games</h2>
-            <div id="mySearchesListContainer" class="list-container w-100" style="max-width: 400px;"></div>
-            <button id="createNewSearchFromMyListButton" class="button button-secondary mt-20">Arrange New Game</button>
-        </div>
+    <!-- Win Screen -->
+    <div id="winScreen" class="hidden fancy-panel max-w-md w-full text-center text-white" role="region" aria-labelledby="result-heading">
+        <h1 id="winMessage" class="text-3xl font-bold mb-4" id="result-heading"></h1>
+        <p id="finalScore" class="text-lg mb-6"></p>
+        <button id="quizBtn" class="tooltip bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded-lg transition duration-300" data-tooltip="Proceed to the EPAM quiz" aria-label="Go to Quiz">Go to Quiz</button>
+    </div>
 
-        <!-- Screen 6: Chat Screen -->
-        <div id="chat-screen" class="screen">
-            <h2 id="chatWithUserTitle" class="page-title w-100">Chat</h2>
-            <div id="chatMessagesContainer"></div>
-            <div id="chatInputContainer">
-                <input type="text" id="chatMessageInput" placeholder="Type a message...">
-                <button id="sendChatMessageButton" class="button">Send</button>
-            </div>
-        </div>
+    <!-- Quiz Screen -->
+    <div id="quizScreen" class="hidden fancy-panel max-w-md w-full text-white" role="region" aria-labelledby="quiz-heading">
+        <h1 class="text-3xl font-bold mb-6 text-center" id="quiz-heading">EPAM Quiz</h1>
+        <div id="quizContent" class="space-y-4"></div>
+    </div>
 
+    <!-- Thank You Screen -->
+    <div id="thankYouScreen" class="hidden fancy-panel max-w-md w-full text-center text-white" role="region" aria-labelledby="thankyou-heading">
+        <h1 class="text-3xl font-bold mb-4" id="thankyou-heading">Thank You!</h1>
+        <p class="text-lg mb-6">Thanks for playing and learning about EPAM!</p>
+        <button id="exportBtn" class="tooltip bg-pink-500 hover:bg-pink-600 text-white py-2 px-4 rounded-lg transition duration-300" data-tooltip="Download completed users data as CSV" aria-label="Export Completed Users">Export Completed Users</button>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- DOM Elements ---
-            const screens = document.querySelectorAll('.screen');
-            const sportGroundsListContainer = document.getElementById('sportGroundsListContainer');
-            const sportCenterNameTitle = document.getElementById('sportCenterNameTitle');
-            const gameDateInput = document.getElementById('gameDate');
-            const startTimeInput = document.getElementById('startTime');
-            const endTimeInput = document.getElementById('endTime');
-            const otherPlayersNeededSelect = document.getElementById('otherPlayersNeeded'); // Changed ID
-            const findTeamButton = document.getElementById('findTeamButton');
-            
-            const teamLookingScreen = document.getElementById('team-looking-screen');
-            const teamLookingTitle = document.getElementById('teamLookingTitle');
-            const teamLookingDetailsCard = document.getElementById('teamLookingDetailsCard');
-            const joinRequestsContainer = document.getElementById('joinRequestsContainer');
-            const teamLookingStatusMessage = document.getElementById('teamLookingStatusMessage');
+        // Local storage for user data
+        function saveUserData(name, email, dataConsent, emailConsent, completedQuiz = false) {
+            const userData = {
+                name: name,
+                email: email,
+                dataConsent: dataConsent,
+                emailConsent: emailConsent,
+                completedQuiz: completedQuiz,
+                timestamp: new Date().toISOString()
+            };
+            let users = JSON.parse(localStorage.getItem('brickBreakerUsers') || '[]');
+            users.push(userData);
+            localStorage.setItem('brickBreakerUsers', JSON.stringify(users));
+            return users.length - 1; // Return index for later update
+        }
 
-            const mySearchesListContainer = document.getElementById('mySearchesListContainer');
-
-            const headerTitle = document.getElementById('headerTitle');
-            const backButton = document.getElementById('backButton');
-            const createNewSearchFromLookingButton = document.getElementById('createNewSearchFromLookingButton');
-            const createNewSearchFromMyListButton = document.getElementById('createNewSearchFromMyListButton');
-
-            const burgerButton = document.getElementById('burgerButton');
-            const navOverlay = document.getElementById('navOverlay');
-            const navOverlayBackdrop = document.getElementById('navOverlayBackdrop');
-            const navHome = document.getElementById('navHome');
-            const navMyPadelGames = document.getElementById('navMyPadelGames'); // Renamed
-            const navCreateNewGame = document.getElementById('navCreateNewGame'); // Renamed
-
-            const chatWithUserTitle = document.getElementById('chatWithUserTitle');
-            const chatMessagesContainer = document.getElementById('chatMessagesContainer');
-            const chatMessageInput = document.getElementById('chatMessageInput');
-            const sendChatMessageButton = document.getElementById('sendChatMessageButton');
-            const authButton = document.getElementById('authButton');
-
-
-            // --- App State ---
-            let currentScreenId = 'auth-screen';
-            let navigationHistory = [];
-            const sportGroundsData = [ // Padel specific names
-                { id: 'pc1', name: 'Metropolis Padel Club', city: 'Metropolis' },
-                { id: 'pc2', name: 'Greenfield Padel Courts', city: 'Metropolis' },
-                { id: 'pc3', name: 'Riverside Padel Center', city: 'Metropolis' },
-                { id: 'pc4', name: 'Victory Padel Arena', city: 'Metropolis' },
-                { id: 'pc5', name: 'Skyline Padel Complex', city: 'Metropolis' },
-            ];
-            let activeSearches = []; // { ..., otherPlayersNeeded, playersJoined, ... }
-            let selectedSportCenter = null;
-            let nextSearchId = 1;
-            let currentViewingSearchId = null;
-            let currentChatContext = null;
-            let chats = {};
-
-            const mockRequesters = [ // More Padel-like
-                { name: "Alex P.", rating: 4.5, games: 120, avatarLetter: "A" }, // "games" to "matchesPlayed"
-                { name: "Sara K.", rating: 4.2, games: 85, avatarLetter: "S" },
-                { name: "Mike B.", rating: 4.8, games: 210, avatarLetter: "M" },
-                { name: "Jess L.", rating: 3.9, games: 50, avatarLetter: "J" },
-                { name: "Carlos G.", rating: 4.0, games: 150, avatarLetter: "C"},
-                { name: "Laura M.", rating: 3.5, games: 70, avatarLetter: "L"}
-            ];
-            const avatarColors = ["#e91e63", "#9c27b0", "#2196f3", "#4caf50", "#ff9800", "#795548", "#009688", "#FF5722"];
-
-
-            // --- Utility Functions ---
-            function showScreen(screenId, isBackAction = false) {
-                closeNavOverlay();
-                if (!isBackAction && currentScreenId !== screenId) {
-                    navigationHistory.push(currentScreenId);
-                }
-                screens.forEach(screen => screen.classList.remove('active'));
-                const targetScreen = document.getElementById(screenId);
-                if (targetScreen) {
-                    targetScreen.classList.add('active');
-                } else {
-                    console.error("Screen not found:", screenId);
-                    document.getElementById('auth-screen').classList.add('active'); 
-                    currentScreenId = 'auth-screen';
-                    navigationHistory = [];
-                    updateHeader();
-                    return;
-                }
-                currentScreenId = screenId;
-                updateHeader();
-                window.scrollTo(0, 0);
+        function updateUserCompletedQuiz(index) {
+            let users = JSON.parse(localStorage.getItem('brickBreakerUsers') || '[]');
+            if (users[index]) {
+                users[index].completedQuiz = true;
+                localStorage.setItem('brickBreakerUsers', JSON.stringify(users));
             }
+        }
 
-            function updateHeader() {
-                backButton.style.visibility = 'hidden';
-                burgerButton.style.visibility = 'visible';
-
-                if (currentScreenId === 'auth-screen') {
-                    headerTitle.textContent = 'PadelUp!';
-                    burgerButton.style.visibility = 'hidden';
-                } else if (currentScreenId === 'grounds-list-screen') {
-                    headerTitle.textContent = 'Choose Padel Club';
-                } else if (currentScreenId === 'sport-center-form-screen') {
-                    headerTitle.textContent = selectedSportCenter ? selectedSportCenter.name : 'Arrange Game';
-                    backButton.style.visibility = 'visible';
-                } else if (currentScreenId === 'team-looking-screen') {
-                    const search = activeSearches.find(s => s.id === currentViewingSearchId);
-                    headerTitle.textContent = search ? `Game: ${search.groundName.substring(0,15)}...` : 'Game Details';
-                    backButton.style.visibility = 'visible';
-                } else if (currentScreenId === 'my-searches-screen') {
-                    headerTitle.textContent = 'My Padel Games';
-                    backButton.style.visibility = 'visible';
-                } else if (currentScreenId === 'chat-screen') {
-                    headerTitle.textContent = currentChatContext ? `Chat with ${currentChatContext.requesterName}` : 'Chat';
-                    backButton.style.visibility = 'visible';
-                }
-
-                if (navigationHistory.length === 0 && currentScreenId !== 'auth-screen') {
-                    if (currentScreenId === 'my-searches-screen' || currentScreenId === 'sport-center-form-screen' || currentScreenId === 'team-looking-screen') {
-                        backButton.style.visibility = 'visible';
-                    } else {
-                         backButton.style.visibility = 'hidden';
-                    }
-                }
-                if (currentScreenId === 'chat-screen' && navigationHistory.length > 0) { // Ensure back button for chat
-                    backButton.style.visibility = 'visible';
-                }
+        function exportCompletedUsers() {
+            let users = JSON.parse(localStorage.getItem('brickBreakerUsers') || '[]');
+            let completed = users.filter(u => u.completedQuiz);
+            if (completed.length === 0) {
+                alert('No users have completed the quiz yet.');
+                return;
             }
-            
-            function goBack() {
-                if (navOverlay.classList.contains('open')) {
-                    closeNavOverlay();
-                    return;
-                }
-                if (navigationHistory.length > 0) {
-                    const previousScreenId = navigationHistory.pop();
-                    showScreen(previousScreenId, true);
-                } else if (currentScreenId !== 'grounds-list-screen' && currentScreenId !== 'auth-screen') {
-                    showScreen('grounds-list-screen', true); 
-                }
-            }
-            backButton.addEventListener('click', goBack);
-
-            function openNavOverlay() { navOverlay.classList.add('open'); navOverlayBackdrop.classList.add('open'); }
-            function closeNavOverlay() { navOverlay.classList.remove('open'); navOverlayBackdrop.classList.remove('open'); }
-            burgerButton.addEventListener('click', openNavOverlay);
-            navOverlayBackdrop.addEventListener('click', closeNavOverlay);
-            navHome.addEventListener('click', (e) => { e.preventDefault(); showScreen('auth-screen'); navigationHistory = []; });
-            navMyPadelGames.addEventListener('click', (e) => { e.preventDefault(); renderMySearches(); showScreen('my-searches-screen'); });
-            navCreateNewGame.addEventListener('click', (e) => { e.preventDefault(); renderSportGrounds(); showScreen('grounds-list-screen'); });
-
-
-            function getRandomColor() { return avatarColors[Math.floor(Math.random() * avatarColors.length)]; }
-            function getRandomRequester() { return mockRequesters[Math.floor(Math.random() * mockRequesters.length)]; }
-
-
-            function renderSportGrounds() {
-                sportGroundsListContainer.innerHTML = '';
-                sportGroundsData.forEach(ground => {
-                    const groundDiv = document.createElement('div');
-                    groundDiv.classList.add('list-item');
-                    groundDiv.innerHTML = `<h3>${ground.name}</h3><p>${ground.city}</p>`;
-                    groundDiv.addEventListener('click', () => {
-                        selectedSportCenter = ground;
-                        renderSportCenterForm(ground);
-                        showScreen('sport-center-form-screen');
-                    });
-                    sportGroundsListContainer.appendChild(groundDiv);
-                });
-            }
-
-            function renderSportCenterForm(center) {
-                sportCenterNameTitle.textContent = `Arrange Game at ${center.name}`;
-                gameDateInput.value = new Date().toISOString().split('T')[0];
-                startTimeInput.value = "18:00";
-                endTimeInput.value = "20:00";
-                otherPlayersNeededSelect.value = "3"; // Default to looking for 3 others for a full game
-            }
-
-            function renderTeamLookingPage(searchId) {
-                currentViewingSearchId = searchId;
-                const search = activeSearches.find(s => s.id === searchId);
-                if (!search) {
-                    showUserMessage('Padel game not found!', 'danger', teamLookingStatusMessage);
-                    setTimeout(() => showScreen('grounds-list-screen'), 2000);
-                    return;
-                }
-
-                teamLookingTitle.textContent = `Padel Game at ${search.groundName}`;
-                const stillNeeded = search.otherPlayersNeeded - search.playersJoined;
-
-                teamLookingDetailsCard.innerHTML = `
-                    <p><strong>Date:</strong> ${new Date(search.date).toLocaleDateString()}</p>
-                    <p><strong>Time:</strong> ${search.startTime} - ${search.endTime}</p>
-                    <p><strong>Original Ask:</strong> ${search.otherPlayersNeeded} other player${search.otherPlayersNeeded > 1 ? 's' : ''}</p>
-                    <p><strong>Players Joined:</strong> ${search.playersJoined}</p>
-                    <p><strong>Still Need:</strong> <strong style="color: ${stillNeeded <= 0 ? 'var(--success-color)' : 'var(--danger-color)'};">${stillNeeded > 0 ? stillNeeded : 'Game Full!'}</strong></p>
-                `;
-
-                joinRequestsContainer.innerHTML = '<h3>Player Requests to Join:</h3>';
-                let hasPendingRequests = false;
-                if (search.joinRequests && search.joinRequests.length > 0) {
-                    search.joinRequests.forEach(req => {
-                        if (req.status === 'pending' && stillNeeded > 0) {
-                            hasPendingRequests = true;
-                            const reqDiv = document.createElement('div');
-                            reqDiv.classList.add('join-request-card');
-                            reqDiv.innerHTML = `
-                                <div class="join-request-header">
-                                    <div class="avatar-circle" style="background-color: ${req.requesterAvatarColor};">${req.requesterName.charAt(0)}</div>
-                                    <div class="join-request-info">
-                                        <h4>${req.requesterName}</h4>
-                                        <p>Rating: ${req.requesterRating} ★ | Matches: ${req.requesterGames}</p>
-                                    </div>
-                                </div>
-                                <div class="join-request-actions">
-                                    <button class="button button-success confirm-request" data-reqid="${req.id}">Confirm</button>
-                                    <button class="button button-danger decline-request" data-reqid="${req.id}">Decline</button>
-                                    <button class="button button-warning chat-request" data-reqid="${req.id}">Chat</button>
-                                </div>
-                            `;
-                            joinRequestsContainer.appendChild(reqDiv);
-                        }
-                    });
-                }
-
-                if (!hasPendingRequests && stillNeeded > 0) {
-                    joinRequestsContainer.innerHTML += '<p class="text-center mt-20" style="color: var(--secondary-color);">No pending requests to join right now.</p>';
-                } else if (stillNeeded <= 0) {
-                     joinRequestsContainer.innerHTML = '<p class="text-center mt-20" style="color: var(--success-color);">This Padel game is full!</p>';
-                }
-
-                teamLookingScreen.querySelectorAll('.confirm-request').forEach(btn => {
-                    btn.addEventListener('click', () => handleConfirmRequest(search.id, btn.dataset.reqid));
-                });
-                teamLookingScreen.querySelectorAll('.decline-request').forEach(btn => {
-                    btn.addEventListener('click', () => handleDeclineRequest(search.id, btn.dataset.reqid));
-                });
-                teamLookingScreen.querySelectorAll('.chat-request').forEach(btn => {
-                    btn.addEventListener('click', () => handleChatRequest(search.id, btn.dataset.reqid));
-                });
-
-                showScreen('team-looking-screen');
-            }
-
-            function showUserMessage(message, type = 'success', element) {
-                element.textContent = message;
-                element.className = `status-message status-${type}`;
-                element.style.display = 'block';
-                setTimeout(() => { element.style.display = 'none'; }, 3000);
-            }
-
-            function handleConfirmRequest(searchId, requestId) {
-                const search = activeSearches.find(s => s.id === searchId);
-                const request = search ? search.joinRequests.find(r => r.id === requestId) : null;
-
-                if (search && request && request.status === 'pending') {
-                    if (search.playersJoined < search.otherPlayersNeeded) {
-                        search.playersJoined++;
-                        request.status = 'accepted';
-                        showUserMessage(`${request.requesterName} confirmed for the game!`, 'success', teamLookingStatusMessage);
-                        renderTeamLookingPage(searchId);
-                    } else {
-                        showUserMessage('This game is already full!', 'warning', teamLookingStatusMessage);
-                    }
-                }
-            }
-
-            function handleDeclineRequest(searchId, requestId) {
-                const search = activeSearches.find(s => s.id === searchId);
-                const request = search ? search.joinRequests.find(r => r.id === requestId) : null;
-
-                if (search && request && request.status === 'pending') {
-                    request.status = 'declined';
-                    showUserMessage(`Request from ${request.requesterName} declined.`, 'danger', teamLookingStatusMessage);
-                    renderTeamLookingPage(searchId);
-                }
-            }
-
-            function handleChatRequest(searchId, requestId) {
-                const search = activeSearches.find(s => s.id === searchId);
-                const request = search ? search.joinRequests.find(r => r.id === requestId) : null;
-
-                if (search && request) {
-                    currentChatContext = {
-                        searchId: search.id,
-                        requestId: request.id,
-                        requesterName: request.requesterName,
-                        requesterAvatarColor: request.requesterAvatarColor
-                    };
-                    renderChatScreen();
-                    showScreen('chat-screen');
-                }
-            }
-
-            function renderMySearches() {
-                mySearchesListContainer.innerHTML = '';
-                if (activeSearches.length === 0) {
-                    mySearchesListContainer.innerHTML = '<p class="text-center">No Padel games arranged yet. Create one!</p>';
-                    return;
-                }
-                activeSearches.slice().reverse().forEach(search => {
-                    const searchDiv = document.createElement('div');
-                    searchDiv.classList.add('list-item');
-                    const stillNeeded = search.otherPlayersNeeded - search.playersJoined;
-                    searchDiv.innerHTML = `
-                        <h3>${search.groundName}</h3>
-                        <p>Date: ${new Date(search.date).toLocaleDateString()} | Time: ${search.startTime} - ${search.endTime}</p>
-                        <p>Players needed: ${search.otherPlayersNeeded} | Joined: ${search.playersJoined} | Spots Left: ${stillNeeded > 0 ? stillNeeded : 'Full'}</p>
-                    `;
-                    searchDiv.addEventListener('click', () => {
-                        renderTeamLookingPage(search.id);
-                    });
-                    mySearchesListContainer.appendChild(searchDiv);
-                });
-            }
-
-            function renderChatScreen() {
-                if (!currentChatContext) return;
-                chatWithUserTitle.textContent = `Chat with ${currentChatContext.requesterName}`;
-                chatMessagesContainer.innerHTML = '';
-                
-                const chatId = `chat_${currentChatContext.searchId}_${currentChatContext.requestId}`;
-                const messages = chats[chatId] || [];
-
-                if (messages.length === 0) {
-                    const systemMsgDiv = document.createElement('div');
-                    systemMsgDiv.classList.add('chat-message', 'them');
-                    systemMsgDiv.style.alignSelf = 'center';
-                    systemMsgDiv.style.backgroundColor = '#f0f0f0';
-                    systemMsgDiv.style.fontStyle = 'italic';
-                    systemMsgDiv.style.fontSize = '0.9em';
-                    systemMsgDiv.textContent = `Chat about the Padel game with ${currentChatContext.requesterName}.`;
-                    chatMessagesContainer.appendChild(systemMsgDiv);
-                }
-
-                messages.forEach(msg => {
-                    const msgDiv = document.createElement('div');
-                    msgDiv.classList.add('chat-message', msg.sender === 'user' ? 'user' : 'them');
-                    msgDiv.textContent = msg.text;
-                    chatMessagesContainer.appendChild(msgDiv);
-                });
-                chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
-            }
-
-            sendChatMessageButton.addEventListener('click', () => {
-                const text = chatMessageInput.value.trim();
-                if (text && currentChatContext) {
-                    const chatId = `chat_${currentChatContext.searchId}_${currentChatContext.requestId}`;
-                    if (!chats[chatId]) {
-                        chats[chatId] = [];
-                    }
-                    chats[chatId].push({ sender: 'user', text: text, timestamp: Date.now() });
-                    chatMessageInput.value = '';
-                    renderChatScreen();
-
-                    setTimeout(() => {
-                         if (currentScreenId === 'chat-screen' && 
-                            `chat_${currentChatContext.searchId}_${currentChatContext.requestId}` === chatId) {
-                            chats[chatId].push({ sender: 'them', text: "Got it! See you on the court.", timestamp: Date.now() });
-                            renderChatScreen();
-                        }
-                    }, 1500);
-                }
+            let csv = 'Name,Email,DataConsent,EmailConsent,Timestamp\n';
+            completed.forEach(u => {
+                csv += `${u.name},${u.email},${u.dataConsent},${u.emailConsent},${u.timestamp}\n`;
             });
-            chatMessageInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') { sendChatMessageButton.click(); }
-            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'completed_users.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
 
-
-            authButton.addEventListener('click', () => {
-                renderSportGrounds();
-                showScreen('grounds-list-screen');
-            });
-
-            findTeamButton.addEventListener('click', () => {
-                const date = gameDateInput.value;
-                const startTime = startTimeInput.value;
-                const endTime = endTimeInput.value;
-                const otherPlayersNeeded = parseInt(otherPlayersNeededSelect.value); // Changed ID
-
-                if (!date || !startTime || !endTime || !selectedSportCenter) {
-                    alert('Please fill in all fields.'); return;
-                }
-                if (new Date(`${date}T${startTime}`) >= new Date(`${date}T${endTime}`)) {
-                    alert('Start time must be before end time.'); return;
-                }
-                 if (new Date(`${date}T${startTime}`) < new Date()) { // Check if in the past
-                    alert('Cannot arrange a game for a past date/time.'); return;
-                }
-
-                const randomReq = getRandomRequester();
-                const newSearch = {
-                    id: `search-${nextSearchId++}`,
-                    groundId: selectedSportCenter.id,
-                    groundName: selectedSportCenter.name,
-                    date: date,
-                    startTime: startTime,
-                    endTime: endTime,
-                    otherPlayersNeeded: otherPlayersNeeded, // Changed field name
-                    playersJoined: 0,
-                    joinRequests: [
-                        {
-                            id: `req-${Date.now()}`,
-                            requesterName: randomReq.name,
-                            requesterAvatarColor: getRandomColor(),
-                            requesterRating: randomReq.rating,
-                            requesterGames: randomReq.games, // "games" in mock data, "Matches" in display
-                            status: 'pending'
-                        }
-                    ]
-                };
-                activeSearches.push(newSearch);
-                renderTeamLookingPage(newSearch.id);
-            });
-            
-            createNewSearchFromLookingButton.addEventListener('click', () => {
-                 renderSportGrounds();
-                 showScreen('grounds-list-screen');
-            });
-            createNewSearchFromMyListButton.addEventListener('click', () => {
-                 renderSportGrounds();
-                 showScreen('grounds-list-screen');
-            });
-
-            // --- Initial Setup ---
-            showScreen('auth-screen');
-            gameDateInput.min = new Date().toISOString().split('T')[0];
+        // User Info Form Handling
+        let currentUserIndex;
+        const userForm = document.getElementById('userForm');
+        userForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const dataConsent = document.getElementById('dataConsent').checked;
+            const emailConsent = document.getElementById('emailConsent').checked;
+            if (dataConsent) {
+                currentUserIndex = saveUserData(name, email, dataConsent, emailConsent);
+                document.getElementById('userInfoScreen').classList.add('hidden');
+                document.getElementById('gameScreen').classList.remove('hidden');
+                startGame();
+            }
         });
+
+        // Game Logic (unchanged)
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        var ballRadius = 10;
+        var x = canvas.width / 2;
+        var y = canvas.height - 30;
+        var dx = 3;
+        var dy = -3;
+        var paddleHeight = 10;
+        var paddleWidth = 100;
+        var paddleX = (canvas.width - paddleWidth) / 2;
+        var rightPressed = false;
+        var leftPressed = false;
+        var smallBrickWidth = 70;
+        var smallBrickHeight = 20;
+        var bigBrickWidth = smallBrickWidth * 2 + 5;
+        var bigBrickHeight = smallBrickHeight * 2 + 5;
+        var brickPadding = 5;
+        var brickOffsetTop = 30;
+        var cellColCount = 10;
+        var cellRowCount = 8;
+        var cellStepX = smallBrickWidth + brickPadding;
+        var cellStepY = smallBrickHeight + brickPadding;
+        var brickOffsetLeft = (canvas.width - (cellColCount * smallBrickWidth + (cellColCount - 1) * brickPadding)) / 2;
+        var score = 0;
+        var lives = 3;
+        var paused = false;
+
+        var occupied = Array.from({length: cellRowCount}, () => Array(cellColCount).fill(false));
+        var bigPositions = [];
+        var bigCount = 0;
+        while (bigCount < 10) {
+            var c = Math.floor(Math.random() * (cellColCount - 1));
+            var r = Math.floor(Math.random() * (cellRowCount - 1));
+            if (!occupied[r][c] && !occupied[r][c + 1] && !occupied[r + 1][c] && !occupied[r + 1][c + 1]) {
+                occupied[r][c] = true;
+                occupied[r][c + 1] = true;
+                occupied[r + 1][c] = true;
+                occupied[r + 1][c + 1] = true;
+                bigPositions.push({r: r, c: c});
+                bigCount++;
+            }
+        }
+
+        var bricks = [];
+        for (var i = 0; i < bigPositions.length; i++) {
+            var pos = bigPositions[i];
+            var brickX = brickOffsetLeft + pos.c * cellStepX;
+            var brickY = brickOffsetTop + pos.r * cellStepY;
+            bricks.push({ x: brickX, y: brickY, width: bigBrickWidth, height: bigBrickHeight, status: 1, isBig: true });
+        }
+        for (var r = 0; r < cellRowCount; r++) {
+            for (var c = 0; c < cellColCount; c++) {
+                if (!occupied[r][c]) {
+                    var brickX = brickOffsetLeft + c * cellStepX;
+                    var brickY = brickOffsetTop + r * cellStepY;
+                    bricks.push({ x: brickX, y: brickY, width: smallBrickWidth, height: smallBrickHeight, status: 1, isBig: false });
+                }
+            }
+        }
+
+        document.addEventListener("keydown", keyDownHandler, false);
+        document.addEventListener("keyup", keyUpHandler, false);
+        document.addEventListener("mousemove", mouseMoveHandler, false);
+        document.addEventListener("touchmove", touchMoveHandler, false);
+
+        function keyDownHandler(e) {
+            if (e.key === "Right" || e.key === "ArrowRight") rightPressed = true;
+            else if (e.key === "Left" || e.key === "ArrowLeft") leftPressed = true;
+        }
+
+        function keyUpHandler(e) {
+            if (e.key === "Right" || e.key === "ArrowRight") rightPressed = false;
+            else if (e.key === "Left" || e.key === "ArrowLeft") leftPressed = false;
+        }
+
+        function mouseMoveHandler(e) {
+            var relativeX = e.clientX - canvas.offsetLeft;
+            if (relativeX > 0 && relativeX < canvas.width) {
+                paddleX = relativeX - paddleWidth / 2;
+            }
+        }
+
+        function touchMoveHandler(e) {
+            var relativeX = e.touches[0].clientX - canvas.offsetLeft;
+            if (relativeX > 0 && relativeX < canvas.width) {
+                paddleX = relativeX - paddleWidth / 2;
+            }
+        }
+
+        var popup = document.getElementById("popup");
+        var popupText = document.getElementById("popupText");
+        var popupBtn = document.getElementById("popupBtn");
+        popupBtn.addEventListener("click", function() {
+            popup.classList.add("hidden");
+            paused = false;
+        });
+
+        function showPopup(message) {
+            popupText.innerText = message;
+            popup.classList.remove("hidden");
+            paused = true;
+            popupBtn.focus();
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+            ctx.fillStyle = "#ec4899";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawPaddle() {
+            ctx.beginPath();
+            ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+            ctx.fillStyle = "#a855f7";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawBricks() {
+            for (var i = 0; i < bricks.length; i++) {
+                var brick = bricks[i];
+                if (brick.status > 0) {
+                    ctx.beginPath();
+                    ctx.rect(brick.x, brick.y, brick.width, brick.height);
+                    ctx.fillStyle = brick.isBig ? "#ef4444" : "#a855f7";
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            }
+        }
+
+        function collisionDetection() {
+            for (var i = 0; i < bricks.length; i++) {
+                var b = bricks[i];
+                if (b.status > 0) {
+                    if (x > b.x && x < b.x + b.width && y > b.y && y < b.y + b.height) {
+                        dy = -dy;
+                        b.status--;
+                        score++;
+                        if (b.status === 0 && b.isBig) {
+                            showPopup("Congratulations! You destroyed a massive brick!");
+                        }
+                    }
+                }
+            }
+        }
+
+        function bricksRemaining() {
+            var count = 0;
+            for (var i = 0; i < bricks.length; i++) {
+                if (bricks[i].status > 0) count++;
+            }
+            return count;
+        }
+
+        function drawScore() {
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "#ec4899";
+            ctx.fillText("Score: " + score, 8, 20);
+        }
+
+        function drawLives() {
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "#ec4899";
+            ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
+        }
+
+        function draw() {
+            if (paused) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBricks();
+            drawBall();
+            drawPaddle();
+            drawScore();
+            drawLives();
+            collisionDetection();
+
+            if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+                dx = -dx;
+            }
+            if (y + dy < ballRadius) {
+                dy = -dy;
+            } else if (y + dy > canvas.height - ballRadius) {
+                if (x > paddleX && x < paddleX + paddleWidth) {
+                    dy = -dy;
+                } else {
+                    lives--;
+                    if (lives === 0) {
+                        document.getElementById('gameScreen').classList.add('hidden');
+                        document.getElementById('winScreen').classList.remove('hidden');
+                        document.getElementById('winMessage').innerText = "GAME OVER";
+                        document.getElementById('finalScore').innerText = "Your score: " + score;
+                        clearInterval(interval);
+                        return;
+                    } else {
+                        x = canvas.width / 2;
+                        y = canvas.height - 30;
+                        dx = 3;
+                        dy = -3;
+                        paddleX = (canvas.width - paddleWidth) / 2;
+                    }
+                }
+            }
+
+            if (rightPressed && paddleX < canvas.width - paddleWidth) {
+                paddleX += 7;
+            }
+            if (leftPressed && paddleX > 0) {
+                paddleX -= 7;
+            }
+
+            x += dx;
+            y += dy;
+
+            if (bricksRemaining() === 0) {
+                document.getElementById('gameScreen').classList.add('hidden');
+                document.getElementById('winScreen').classList.remove('hidden');
+                document.getElementById('winMessage').innerText = "Congratulations! You won!";
+                document.getElementById('finalScore').innerText = "Your score: " + score;
+                clearInterval(interval);
+                return;
+            }
+        }
+
+        var interval;
+
+        function startGame() {
+            interval = setInterval(draw, 10);
+        }
+
+        // Quiz Logic
+        const quizQuestions = [
+            {
+                question: "What is EPAM's unofficial mascot in its office lore?",
+                options: ["Code Ninja", "Pixel Panda", "Bug Buster", "Cloud Dragon"],
+                correct: "Pixel Panda"
+            },
+            {
+                question: "Which quirky tradition do EPAM developers celebrate annually?",
+                options: ["Pizza Hackathon", "Code & Coffee Day", "Bug Bash Fiesta", "Tech Karaoke Night"],
+                correct: "Code & Coffee Day"
+            },
+            {
+                question: "What’s the name of EPAM’s legendary internal hackathon?",
+                options: ["CodeStorm", "TechTango", "HackSavvy", "ByteBlitz"],
+                correct: "ByteBlitz"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+
+        function showQuestion() {
+            const quizContent = document.getElementById('quizContent');
+            const question = quizQuestions[currentQuestionIndex];
+            quizContent.innerHTML = `
+                <p class="text-lg font-semibold">${question.question}</p>
+                <div class="space-y-2">
+                    ${question.options.map(opt => `
+                        <button class="tooltip w-full bg-white/20 hover:bg-white/30 p-2 rounded-lg text-left transition duration-300 quiz-option" data-tooltip="Select this answer" data-answer="${opt}" aria-label="Answer: ${opt}">${opt}</button>
+                    `).join('')}
+                </div>
+            `;
+            document.querySelectorAll('.quiz-option').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (this.dataset.answer === question.correct) {
+                        currentQuestionIndex++;
+                        if (currentQuestionIndex < quizQuestions.length) {
+                            showQuestion();
+                        } else {
+                            updateUserCompletedQuiz(currentUserIndex);
+                            document.getElementById('quizScreen').classList.add('hidden');
+                            document.getElementById('thankYouScreen').classList.remove('hidden');
+                        }
+                    }
+                });
+            });
+        }
+
+        document.getElementById('quizBtn').addEventListener('click', function() {
+            document.getElementById('winScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+            showQuestion();
+        });
+
+        document.getElementById('exportBtn').addEventListener('click', exportCompletedUsers);
     </script>
 </body>
 </html>
